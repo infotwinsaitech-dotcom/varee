@@ -1,0 +1,247 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cart | Varee</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+</head>
+
+<body class="bg-[#f6f5f2]">
+
+<nav class="p-6 flex justify-between">
+<h1 class="text-2xl">Varee</h1>
+
+<div class="flex items-center gap-6">
+<a href="/home/">Home</a>
+<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
+<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
+<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+
+<a href="/profile/" class="text-sm">Profile</a>
+<a href="/terms/" class="text-sm">Terms</a>
+<a href="/shipping/" class="text-sm">Shipping</a>
+<a href="/sustainability/" class="text-sm">Sustainability</a>
+
+<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+</div>
+</nav>
+
+<div class="p-10 grid grid-cols-3 gap-10">
+
+<!-- CART -->
+<div class="col-span-2">
+<div id="cart-items"></div>
+</div>
+
+<!-- SUMMARY -->
+<div class="bg-white p-6 rounded shadow">
+
+<h2 class="text-xl mb-4">Order Summary</h2>
+
+<p>Subtotal: <span id="subtotal">₹0</span></p>
+<p>Tax: <span id="tax">₹0</span></p>
+<h3 class="mt-4 text-lg">Total: ₹<span id="cart-total">0</span></h3>
+
+<button onclick="payNow()"
+class="w-full mt-6 bg-pink-400 text-white p-2 rounded">
+Pay Online
+</button>
+
+<button onclick="cashOnDelivery()"
+class="w-full mt-3 bg-green-600 text-white p-2 rounded">
+Cash on Delivery
+</button>
+
+<a href="/checkout/" class="block text-center w-full mt-3 bg-blue-600 text-white p-2 rounded">
+Checkout
+</a>
+
+</div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+
+// ✅ CSRF TOKEN FUNCTION
+function getCSRFToken() {
+    let cookieValue = null;
+    const cookies = document.cookie.split(';');
+
+    for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith('csrftoken=')) {
+            cookieValue = cookie.substring('csrftoken='.length);
+            break;
+        }
+    }
+    return cookieValue;
+}
+
+// ✅ LOAD CART
+async function loadCart() {
+    const container = document.getElementById("cart-items");
+
+    const res = await fetch("/api/cart/");
+    const cart = await res.json();
+
+    container.innerHTML = "";
+    let subtotal = 0;
+
+    cart.forEach(item => {
+        const price = item.product.price * item.quantity;
+        subtotal += price;
+
+        container.innerHTML += `
+        <div class="flex gap-4 border-b py-4">
+
+            <img src="http://127.0.0.1:8000${item.product.image}" class="w-20 h-20"/>
+
+            <div class="flex-1">
+                <h3>${item.product.name}</h3>
+                <p>${item.product.category}</p>
+                <p>₹${item.product.price}</p>
+
+                <div class="flex gap-2 mt-2">
+                    <button onclick="updateQty(${item.id}, -1)">-</button>
+                    <span>${item.quantity}</span>
+                    <button onclick="updateQty(${item.id}, 1)">+</button>
+
+                    <span onclick="removeItem(${item.id})"
+                    style="color:red;cursor:pointer;">Remove</span>
+                </div>
+            </div>
+
+            <div>₹${price}</div>
+        </div>
+        `;
+    });
+
+    const tax = Math.floor(subtotal * 0.05);
+
+    document.getElementById("subtotal").innerText = "₹" + subtotal;
+    document.getElementById("tax").innerText = "₹" + tax;
+    document.getElementById("cart-total").innerText = subtotal + tax;
+}
+
+// ✅ UPDATE QTY
+async function updateQty(id, change) {
+    const res = await fetch(`/api/cart/${id}/`);
+    const item = await res.json();
+
+    let newQty = item.quantity + change;
+    if (newQty < 1) return;
+
+    await fetch(`/api/cart/${id}/`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRFToken()
+        },
+        body: JSON.stringify({ quantity: newQty })
+    });
+
+    loadCart();
+}
+
+// ✅ REMOVE ITEM
+async function removeItem(id) {
+    await fetch(`/api/cart/${id}/`, {
+        method: "DELETE",
+        headers: {
+            "X-CSRFToken": getCSRFToken()
+        }
+    });
+
+    loadCart();
+}
+
+// ✅ ONLINE PAYMENT
+async function payNow() {
+
+    const res = await fetch("/api/orders/create-payment/", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCSRFToken()
+        }
+    });
+
+    const data = await res.json();
+
+    const options = {
+        key: "rzp_test_SctBLJdpZLfuV2",
+        amount: data.amount,
+        currency: "INR",
+        name: "Varee",
+        order_id: data.id,
+
+        handler: async function (response) {
+
+            const verifyRes = await fetch("/api/orders/verify-payment/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken()
+                },
+                body: JSON.stringify({
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature
+                })
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (verifyData.status === "success") {
+
+                await fetch("/api/orders/place/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCSRFToken()
+                    },
+                    body: JSON.stringify({ payment_status: "Paid" })
+                });
+
+                alert("✅ Payment Success");
+                window.location.href = "/orders/";
+
+            } else {
+                alert("❌ Payment Failed");
+            }
+        }
+    };
+
+    new Razorpay(options).open();
+}
+
+// ✅ COD
+async function cashOnDelivery() {
+
+    await fetch("/api/orders/place/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRFToken()
+        },
+        body: JSON.stringify({
+            payment_status: "Pending"
+        })
+    });
+
+    alert("✅ Order placed (Cash on Delivery)");
+    window.location.href = "/orders/";
+}
+
+// INIT
+loadCart();
+
+</script>
+
+</body>
+</html>

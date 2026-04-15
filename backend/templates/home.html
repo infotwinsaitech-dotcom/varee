@@ -1,0 +1,219 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif&family=Manrope&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+
+<title>Home</title>
+</head>
+
+<body class="bg-background text-on-surface">
+
+<!-- NAVBAR -->
+<nav class="bg-[#faf9f6]/70 backdrop-blur-xl sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-8 py-6 max-w-[1440px] mx-auto">
+
+<div class="text-2xl font-serif">Varee</div>
+
+<form action="/search/" method="GET" class="flex items-center gap-2">
+<input type="text" name="q" placeholder="Search products..." class="border px-3 py-1 rounded"/>
+<button type="submit" class="bg-black text-white px-3 py-1 rounded">Search</button>
+</form>
+
+<div class="flex items-center gap-6">
+<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
+<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
+<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+
+<a href="/profile/" class="text-sm">Profile</a>
+<a href="/terms/" class="text-sm">Terms</a>
+<a href="/shipping/" class="text-sm">Shipping</a>
+<a href="/sustainability/" class="text-sm">Sustainability</a>
+
+<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+</div>
+</div>
+</nav>
+
+<!-- HERO -->
+<section class="mt-6 mb-20 px-6">
+<div class="relative rounded-2xl overflow-hidden h-[400px]">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCh-OcPwSMwkmR5ca2eLq1HVbRMb2GWod6t42b0oNxR3uSffhdFv9xsJyBwqA6Kn4FCmpPfaEqHTBYOejSfwNh34nIkxb6KhKougR03FcOhN6BbYUzUIxKKc-JrCogiOGxwnORmaeSh5_ViBIXy-hzGHbftuRFkyHEjHb6ePAXLtMUbSG6J7Lp72ilWeryLxbvgcinf5Pmb5b4TBc4dWZXWJDhGPkr_GYPToqBJP8iWVnUN0oeAQPSw5iPoqAcsuPLHud0tQJEfgSq"
+class="w-full h-full object-cover"/>
+
+<div class="absolute inset-0 bg-black/40 flex items-center px-10">
+<div class="text-white">
+<h1 class="text-4xl font-serif mb-3">Welcome to Varee</h1>
+<p class="text-lg">Explore amazing products</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="px-6 mb-20">
+<h2 class="text-3xl font-serif mb-8">Products</h2>
+
+<div id="product-container"
+class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+</div>
+</section>
+
+<footer class="bg-gray-100 text-center py-10">
+<p>© 2026 Varee</p>
+<div class="mt-4 flex justify-center gap-6 text-sm">
+<a href="/profile/">Profile</a>
+<a href="/terms/">Terms</a>
+<a href="/shipping/">Shipping</a>
+<a href="/sustainability/">Sustainability</a>
+</div>
+</footer>
+
+<script>
+
+let wishlist = [];
+
+// ✅ LOAD WISHLIST
+async function loadWishlist() {
+    const res = await fetch("/api/wishlist/");
+    const data = await res.json();
+
+    wishlist = data.map(item => item.product.id);
+
+    loadProducts();
+}
+
+// ✅ LOAD PRODUCTS
+async function loadProducts() {
+    const container = document.getElementById("product-container");
+
+    const res = await fetch("/api/products/");
+    const products = await res.json();
+
+    container.innerHTML = "";
+
+    products.forEach(p => {
+
+        const isWish = wishlist.includes(p.id);
+
+        container.innerHTML += `
+<div class="bg-white rounded-xl shadow p-4 relative">
+
+    <!-- ❤️ HEART -->
+    <button onclick="toggleWishlist(${p.id})"
+        class="absolute top-2 right-2 text-2xl
+        ${isWish ? 'text-black' : 'text-pink-500'}">
+        ♥
+    </button>
+
+    <!-- PRODUCT -->
+    <a href="/product-detail/${p.id}/">
+        <img src="${p.image ? p.image : '/static/default.png'}"
+            class="w-full h-48 object-cover rounded-lg" />
+
+        <h3 class="mt-4 font-semibold text-lg">${p.name}</h3>
+    </a>
+
+    <p class="text-gray-500 text-sm">
+        ${p.category} - ${p.subcategory}
+    </p>
+
+    <p class="mt-2 font-bold text-xl">₹${p.price}</p>
+
+    <!-- ✅ FIXED BUTTON -->
+    <button onclick="addToCart(${p.id}, this)"
+        class="mt-3 w-full bg-black text-white py-2 rounded-full">
+        Add to Cart
+    </button>
+
+</div>
+`;
+    });
+}
+
+// ✅ TOGGLE WISHLIST
+async function toggleWishlist(productId) {
+
+    if (wishlist.includes(productId)) {
+
+        await fetch(`/api/wishlist/remove/${productId}/`, {
+            method: "POST"
+        });
+
+        wishlist = wishlist.filter(id => id !== productId);
+
+    } else {
+
+        await fetch("/api/wishlist/add/", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ product_id: productId })
+        });
+
+        wishlist.push(productId);
+    }
+
+    loadProducts();
+}
+
+// 🛒 ✅ FINAL ADD TO CART FIX
+function getCSRFToken() {
+    let cookieValue = null;
+    const cookies = document.cookie.split(';');
+
+    for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith('csrftoken=')) {
+            cookieValue = cookie.substring('csrftoken='.length);
+            break;
+        }
+    }
+    return cookieValue;
+}
+
+async function addToCart(productId, btn) {
+
+    btn.innerText = "Adding...";
+    btn.disabled = true;
+
+    try {
+        const res = await fetch("/api/cart/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken()
+            },
+            credentials: "same-origin",   // 🔥 VERY IMPORTANT
+            body: JSON.stringify({
+                product_id: productId
+            })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            alert("✅ Added to cart");   // 👈 popup वापस
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("Error ❌");
+    }
+
+    btn.innerText = "Add to Cart";
+    btn.disabled = false;
+}
+
+// INIT
+loadWishlist();
+
+</script>
+
+</body>
+</html>

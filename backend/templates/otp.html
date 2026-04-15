@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<div class="flex items-center gap-6">
+
+<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
+<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
+<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+
+<!-- ✅ NEW LINKS -->
+<a href="/profile/" class="text-sm">Profile</a>
+<a href="/terms/" class="text-sm">Terms</a>
+<a href="/shipping/" class="text-sm">Shipping</a>
+<a href="/sustainability/" class="text-sm">Sustainability</a>
+
+<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+
+</div>
+    <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-md text-center">
+
+        <h2 class="text-2xl font-bold mb-4">Verify OTP</h2>
+        <p class="text-gray-500 mb-6">Enter the OTP sent to your email</p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <input type="text" name="otp" placeholder="Enter OTP"
+                class="border p-3 w-full mb-4 rounded-lg text-center text-lg"/>
+
+            <button type="submit"
+                class="bg-yellow-500 text-white px-6 py-3 rounded-full w-full">
+                Verify OTP
+            </button>
+        </form>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p class="text-red-500 mt-3">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

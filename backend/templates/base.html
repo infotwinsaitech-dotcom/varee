@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<title>{% block title %}Varee{% endblock %}</title>
+</head>
+
+<body class="bg-background text-on-surface">
+
+<!-- ✅ NAVBAR (COMMON) -->
+<nav class="bg-[#faf9f6]/70 backdrop-blur-xl sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-8 py-6 max-w-[1440px] mx-auto">
+
+<div class="text-2xl font-serif">Varee</div>
+
+<div class="flex items-center gap-6">
+
+<a href="/home/">Home</a>
+<a href="/profile/">Profile</a>
+<a href="/wishlist/">Wishlist</a>
+<a href="/orders/">Orders</a>
+
+<a href="/terms/">Terms</a>
+<a href="/shipping/">Shipping</a>
+<a href="/sustainability/">Sustainability</a>
+
+</div>
+
+</div>
+</nav>
+
+<!-- ✅ MAIN CONTENT -->
+<div class="px-6 py-10">
+{% block content %}
+{% endblock %}
+</div>
+
+<!-- ✅ FOOTER -->
+<footer class="bg-gray-100 text-center py-10 mt-10">
+
+<p>© 2026 Varee</p>
+
+<div class="mt-4 flex justify-center gap-6 text-sm">
+<a href="/profile/">Profile</a>
+<a href="/terms/">Terms</a>
+<a href="/shipping/">Shipping</a>
+<a href="/sustainability/">Sustainability</a>
+</div>
+
+</footer>
+
+</body>
+</html>

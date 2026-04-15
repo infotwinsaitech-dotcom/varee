@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Privacy Policy</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body class="bg-gray-100">
+<div class="flex items-center gap-6">
+
+<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
+<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
+<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+
+<!-- ✅ NEW LINKS -->
+<a href="/profile/" class="text-sm">Profile</a>
+<a href="/terms/" class="text-sm">Terms</a>
+<a href="/shipping/" class="text-sm">Shipping</a>
+<a href="/sustainability/" class="text-sm">Sustainability</a>
+
+<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+
+</div>
+<div class="max-w-4xl mx-auto p-10 bg-white mt-10 rounded shadow">
+
+<h1 class="text-3xl font-bold mb-6">Privacy Policy</h1>
+
+<p class="mb-4">We respect your privacy.</p>
+<p>Your data is safe and secure.</p>
+
+<a href="/home/" class="text-blue-500 mt-6 inline-block">⬅ Back</a>
+
+</div>
+
+</body>
+</html>

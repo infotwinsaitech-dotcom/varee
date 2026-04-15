@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Detail</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/script.js' %}"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-10 font-sans">
+<div class="flex items-center gap-6">
+
+<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
+<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
+<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+
+<!-- ✅ NEW LINKS -->
+<a href="/profile/" class="text-sm">Profile</a>
+<a href="/terms/" class="text-sm">Terms</a>
+<a href="/shipping/" class="text-sm">Shipping</a>
+<a href="/sustainability/" class="text-sm">Sustainability</a>
+
+<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+
+</div>
+<h1 class="text-3xl font-bold mb-6">📦 Order Detail</h1>
+
+{% if order %}
+<div class="bg-white p-6 rounded-xl shadow max-w-xl">
+
+    <!-- PRODUCT -->
+    <h2 class="text-xl font-semibold mb-2">
+        Product: {{ order.product.name }}
+    </h2>
+
+    <p><strong>Category:</strong> {{ order.product.category }}</p>
+
+    <p><strong>Price:</strong> ₹{{ order.product.price }}</p>
+
+    <p><strong>Quantity:</strong> {{ order.quantity }}</p>
+
+    <p class="text-lg font-bold mt-2">
+        Total: ₹{{ order.total_price }}
+    </p>
+
+    <!-- STATUS -->
+    <p class="mt-2">
+        <strong>Status:</strong>
+        <span class="
+            px-3 py-1 rounded-full text-sm
+            {% if order.status == 'pending' %}bg-yellow-100 text-yellow-700
+            {% elif order.status == 'completed' %}bg-green-100 text-green-700
+            {% elif order.status == 'cancelled' %}bg-red-100 text-red-700
+            {% else %}bg-gray-100 text-gray-700{% endif %}
+        ">
+            {{ order.status }}
+        </span>
+    </p>
+
+    <!-- DATE -->
+    <p class="mt-2">
+        <strong>Order Date:</strong>
+        {{ order.created_at|date:"d M Y, h:i A" }}
+    </p>
+
+    <hr class="my-4">
+
+    <!-- DELIVERY -->
+    <h3 class="font-semibold text-lg mb-2">🚚 Delivery Info</h3>
+    <p class="text-gray-600">Expected Delivery: 3–5 days</p>
+
+</div>
+
+{% else %}
+
+<div class="bg-red-100 text-red-700 p-4 rounded">
+    Order not found ❌
+</div>
+
+{% endif %}
+
+<br>
+
+<a href="/orders/" class="text-blue-500 hover:underline">
+    ⬅ Back to Orders
+</a>
+
+</body>
+</html>

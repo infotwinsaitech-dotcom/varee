@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Contact | Varee</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-gray-100">
+<div class="flex items-center gap-6">
+
+<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
+<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
+<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+
+<!-- ✅ NEW LINKS -->
+<a href="/profile/" class="text-sm">Profile</a>
+<a href="/terms/" class="text-sm">Terms</a>
+<a href="/shipping/" class="text-sm">Shipping</a>
+<a href="/sustainability/" class="text-sm">Sustainability</a>
+
+<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+
+</div>
+<div class="max-w-3xl mx-auto py-16 px-6">
+
+    <h1 class="text-4xl mb-10 text-center">📞 Contact Us</h1>
+
+    <div class="bg-white p-8 rounded-xl shadow">
+
+        <form id="contact-form" class="space-y-6">
+
+            <input id="name" type="text" placeholder="Your Name"
+                class="w-full p-3 border rounded" required>
+
+            <input id="email" type="email" placeholder="Your Email"
+                class="w-full p-3 border rounded" required>
+
+            <input id="subject" type="text" placeholder="Subject"
+                class="w-full p-3 border rounded" required>
+
+            <textarea id="message" placeholder="Message"
+                class="w-full p-3 border rounded" rows="4" required></textarea>
+
+            <button type="submit"
+                class="w-full bg-black text-white py-3 rounded">
+                Send Message
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+document.getElementById("contact-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const subject = document.getElementById("subject").value;
+    const message = document.getElementById("message").value;
+
+    try {
+        const res = await fetch("/api/contact/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name,
+                email,
+                subject,
+                message
+            })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            alert("✅ Message sent successfully");
+            document.getElementById("contact-form").reset();
+        } else {
+            alert("❌ Error sending message");
+            console.log(data);
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("Server error ❌");
+    }
+});
+</script>
+
+</body>
+</html>

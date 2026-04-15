@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-10">
+<div class="flex items-center gap-6">
+
+<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
+<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
+<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+
+<!-- ✅ NEW LINKS -->
+<a href="/profile/" class="text-sm">Profile</a>
+<a href="/terms/" class="text-sm">Terms</a>
+<a href="/shipping/" class="text-sm">Shipping</a>
+<a href="/sustainability/" class="text-sm">Sustainability</a>
+
+<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+
+</div>
+<h1 class="text-2xl mb-6">👤 My Profile</h1>
+
+<div class="bg-white p-6 rounded shadow w-[400px]">
+
+    <label class="block mb-2">Name</label>
+    <input id="name" class="w-full border p-2 mb-4 rounded"/>
+
+    <label class="block mb-2">Email</label>
+    <input id="email" class="w-full border p-2 mb-4 rounded"/>
+
+    <label class="block mb-2">Phone</label>
+    <input id="phone" class="w-full border p-2 mb-4 rounded"/>
+
+    <button onclick="saveProfile()"
+        class="bg-black text-white px-4 py-2 rounded w-full">
+        Save Changes
+    </button>
+
+</div>
+
+<script>
+// LOAD DATA
+async function loadProfile() {
+    const res = await fetch("/api/profile/");
+    const data = await res.json();
+
+    document.getElementById("name").value = data.name;
+    document.getElementById("email").value = data.email;
+    document.getElementById("phone").value = data.phone;
+}
+
+// SAVE DATA
+async function saveProfile() {
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const phone = document.getElementById("phone").value;
+
+    await fetch("/api/profile/update/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name,
+            email,
+            phone
+        })
+    });
+
+    alert("✅ Profile Saved");
+}
+
+
+loadProfile();
+</script>
+
+</body>
+</html>

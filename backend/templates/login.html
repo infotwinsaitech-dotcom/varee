@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<div class="flex items-center gap-6">
+
+<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
+<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
+<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+
+<!-- ✅ NEW LINKS -->
+<a href="/profile/" class="text-sm">Profile</a>
+<a href="/terms/" class="text-sm">Terms</a>
+<a href="/shipping/" class="text-sm">Shipping</a>
+<a href="/sustainability/" class="text-sm">Sustainability</a>
+
+<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+
+</div>
+<div class="bg-white p-10 rounded-xl shadow w-full max-w-md">
+
+<h2 class="text-3xl font-bold text-center mb-6">Login</h2>
+
+<!-- ERROR -->
+{% if messages %}
+    {% for message in messages %}
+        <p class="text-red-500 text-center mb-4">{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+<form method="POST" class="space-y-6">
+{% csrf_token %}
+
+<input name="username" placeholder="Username"
+class="w-full p-3 border rounded"/>
+
+<input name="password" type="password" placeholder="Password"
+class="w-full p-3 border rounded"/>
+
+<button type="submit"
+class="w-full bg-blue-500 text-white py-3 rounded">
+Login
+</button>
+
+</form>
+
+<div class="text-center mt-4">
+<a href="/forgot-password/" class="text-sm text-blue-500">Forgot Password?</a>
+</div>
+
+</div>
+
+</body>
+</html>

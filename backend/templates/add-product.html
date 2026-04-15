@@ -1,0 +1,201 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<!-- CSS -->
+<link rel="stylesheet" href="../css/style.css">
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif&family=Manrope&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+
+<!-- JS -->
+<script src="../js/script.js"></script>
+
+</head>
+
+<body class="bg-surface font-body text-on-surface selection:bg-primary-container">
+<div class="flex items-center gap-6">
+
+<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
+<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
+<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+
+<!-- ✅ NEW LINKS -->
+<a href="/profile/" class="text-sm">Profile</a>
+<a href="/terms/" class="text-sm">Terms</a>
+<a href="/shipping/" class="text-sm">Shipping</a>
+<a href="/sustainability/" class="text-sm">Sustainability</a>
+
+<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+
+</div>
+<!-- ✅ BODY SAME (kuch change nahi) -->
+<!-- 👉 Tum yaha apna pura body paste karo (jo tumne bheja tha) -->
+<body class="bg-surface font-body text-on-surface selection:bg-primary-container">
+<!-- Sidebar Navigation -->
+<nav class="fixed left-0 top-0 h-full w-72 bg-[#faf9f6] border-r border-[#c8c7bc]/15 flex flex-col py-12 px-8 z-40">
+<div class="font-['Noto_Serif'] text-xl font-bold mb-8 text-[#735c00]">Varee Atelier</div>
+<div class="flex flex-col gap-2">
+<a class="flex items-center gap-4 py-4 px-8 opacity-50 font-medium text-sm tracking-wide uppercase hover:opacity-100 hover:translate-x-1 transition-all duration-300 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- Active Tab: Add Product -->
+<a class="flex items-center gap-4 text-[#735c00] bg-[#efeeeb] rounded-r-full py-4 px-8 ml-[-32px] pl-16 font-medium text-sm tracking-wide uppercase transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span>Add Product</span>
+</a>
+<a class="flex items-center gap-4 py-4 px-8 opacity-50 font-medium text-sm tracking-wide uppercase hover:opacity-100 hover:translate-x-1 transition-all duration-300 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" data-icon="local_mall">local_mall</span>
+<span>Orders</span>
+</a>
+<a class="flex items-center gap-4 py-4 px-8 opacity-50 font-medium text-sm tracking-wide uppercase hover:opacity-100 hover:translate-x-1 transition-all duration-300 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Analytics</span>
+</a>
+<a class="flex items-center gap-4 py-4 px-8 opacity-50 font-medium text-sm tracking-wide uppercase hover:opacity-100 hover:translate-x-1 transition-all duration-300 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<div class="mt-auto pt-8">
+<button class="w-full py-3 px-6 rounded-full border border-outline-variant text-on-surface text-sm font-medium hover:bg-surface-container transition-colors">
+                View Boutique
+            </button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-72 min-h-screen p-12 lg:p-20">
+<!-- Top Bar -->
+<header class="flex justify-between items-center mb-16">
+<div>
+<span class="text-label-md uppercase tracking-[0.2em] text-outline text-xs mb-2 block">Curation Portal</span>
+<h1 class="text-4xl lg:text-5xl font-headline font-bold text-on-surface tracking-tight">Add New Creation</h1>
+</div>
+<div class="flex items-center gap-6">
+<button class="relative p-2 text-on-surface opacity-60 hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary-fixed rounded-full"></span>
+</button>
+<div class="h-12 w-12 rounded-full overflow-hidden bg-surface-container">
+<img alt="Seller Profile Avatar" class="w-full h-full object-cover" data-alt="Close-up portrait of a professional woman with soft lighting and neutral background, high fashion aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvxdMTIraYxjBnE_jJthws4E5JEFUBrskYUpEb0OxCN2mKMzmwbGR318HuEEq8QiM5jVGyfdKrOlNldeC4h2RpGoDD23ayUtro0lJrg6ZlMZSrDLrXF-vklGb4ouh5lHv2h_I8ehxq5Fb9acBNdTQTJ0DHIZFITe2hCy0efwimLNovuswYCF2O1jMHgbBXP3fPe1Aev4A4Sn5O6lYySz2kK-hfebkw2dGvRKZomU77QbBDrqacov7YlCGObwYQdH0vLSxppJOy_tle"/>
+</div>
+</div>
+</header>
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+<!-- Left Column: Product Details -->
+<div class="lg:col-span-7 space-y-12">
+<div class="bg-surface-container-low p-10 rounded-xl space-y-8">
+<!-- Product Name -->
+<div class="space-y-3">
+<label class="block text-sm font-medium text-outline uppercase tracking-wider">Product Name</label>
+<input class="w-full bg-surface py-4 px-6 rounded-full border-none shadow-sm focus:ring-2 focus:ring-primary/20 placeholder:text-outline-variant transition-all" placeholder="e.g. Silk Wrap Blouse in Ecru" type="text"/>
+</div>
+<!-- Category & Price Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-3">
+<label class="block text-sm font-medium text-outline uppercase tracking-wider">Category</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface py-4 px-6 rounded-full border-none shadow-sm focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
+<option>Select Category</option>
+<option>Ready-to-Wear</option>
+<option>Leather Goods</option>
+<option>Accessories</option>
+<option>Fine Jewelry</option>
+</select>
+<span class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-40" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<div class="space-y-3">
+<label class="block text-sm font-medium text-outline uppercase tracking-wider">Price (USD)</label>
+<div class="relative">
+<span class="absolute left-6 top-1/2 -translate-y-1/2 text-outline">$</span>
+<input class="w-full bg-surface py-4 pl-12 pr-6 rounded-full border-none shadow-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="0.00" type="number"/>
+</div>
+</div>
+</div>
+<!-- Description -->
+<div class="space-y-3">
+<label class="block text-sm font-medium text-outline uppercase tracking-wider">Rich Description</label>
+<div class="bg-surface rounded-xl shadow-sm overflow-hidden border border-outline-variant/10">
+<div class="flex gap-4 p-3 border-b border-outline-variant/10 bg-surface-container-lowest">
+<button class="p-1.5 hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined text-sm" data-icon="format_bold">format_bold</span></button>
+<button class="p-1.5 hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined text-sm" data-icon="format_italic">format_italic</span></button>
+<button class="p-1.5 hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined text-sm" data-icon="format_list_bulleted">format_list_bulleted</span></button>
+<button class="p-1.5 hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined text-sm" data-icon="link">link</span></button>
+</div>
+<textarea class="w-full bg-transparent p-6 border-none focus:ring-0 resize-none min-h-[200px]" placeholder="Describe the story, materials, and craftsmanship behind this piece..." rows="6"></textarea>
+</div>
+</div>
+<!-- Stock Quantity -->
+<div class="space-y-3 max-w-[240px]">
+<label class="block text-sm font-medium text-outline uppercase tracking-wider">Stock Quantity</label>
+<input class="w-full bg-surface py-4 px-6 rounded-full border-none shadow-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="1" type="number"/>
+</div>
+</div>
+</div>
+<!-- Right Column: Media & Actions -->
+<div class="lg:col-span-5 space-y-10">
+<!-- Image Upload Box -->
+<div class="bg-surface-container-low p-10 rounded-xl space-y-6">
+<label class="block text-sm font-medium text-outline uppercase tracking-wider">Product Imagery</label>
+<div class="aspect-[4/5] w-full rounded-xl border-2 border-dashed border-outline-variant/30 flex flex-col items-center justify-center gap-4 bg-surface hover:bg-surface-container transition-all cursor-pointer group">
+<div class="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl" data-icon="cloud_upload">cloud_upload</span>
+</div>
+<div class="text-center">
+<p class="font-semibold text-on-surface">Upload high-res images</p>
+<p class="text-sm text-outline mt-1">PNG, JPG or WEBP (Max. 10MB)</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<div class="aspect-square bg-surface-container rounded-lg border border-outline-variant/10"></div>
+<div class="aspect-square bg-surface-container rounded-lg border border-outline-variant/10"></div>
+<div class="aspect-square bg-surface-container rounded-lg border border-outline-variant/10"></div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-col gap-4">
+<button class="w-full py-5 rounded-full bg-gradient-to-r from-primary to-[#876c00] text-on-primary font-bold text-lg shadow-xl shadow-primary/10 hover:shadow-primary/20 active:scale-95 transition-all">
+                        Publish Creation
+                    </button>
+<button class="w-full py-5 rounded-full border border-primary text-primary font-bold text-lg hover:bg-primary/5 active:scale-95 transition-all">
+                        Save Draft
+                    </button>
+</div>
+<!-- Guidance Note -->
+<div class="p-8 bg-tertiary-container/30 rounded-xl border border-tertiary-container/50">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary mt-1" data-icon="lightbulb">lightbulb</span>
+<div class="space-y-2">
+<h4 class="font-headline font-bold text-on-tertiary-container">Seller's Tip</h4>
+<p class="text-sm text-on-tertiary-container/80 leading-relaxed">
+                                Items with at least 3 high-resolution images and a detailed story-based description tend to sell 40% faster in the Varee ecosystem.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Aesthetic Footer Placeholder -->
+<footer class="mt-24 pt-12 border-t border-outline-variant/10 flex justify-between items-center text-outline text-xs uppercase tracking-widest">
+<div>© 2024 Varee Atelier Global</div>
+<div class="flex gap-8">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Merchant Terms</a>
+<a class="hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</footer>
+</main>
+<!-- Floating Help Button (FAB Suppression active on this details screen as per rules, but including for brand flavor if needed) -->
+<!-- Suppressed for transactional screen logic -->
+</body>
+</body>
+</html>

@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Register</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif&family=Manrope&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+
+<script src="{% static 'js/script.js' %}" defer></script>
+
+</head>
+
+<body class="bg-background font-body text-on-surface selection:bg-primary-container">
+<div class="flex items-center gap-6">
+
+<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
+<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
+<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+
+<!-- ✅ NEW LINKS -->
+<a href="/profile/" class="text-sm">Profile</a>
+<a href="/terms/" class="text-sm">Terms</a>
+<a href="/shipping/" class="text-sm">Shipping</a>
+<a href="/sustainability/" class="text-sm">Sustainability</a>
+
+<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+
+</div>
+<main class="flex min-h-screen w-full">
+
+<!-- LEFT IMAGE -->
+<section class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-surface-dim">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover"
+src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhynPWfDDokwBWCzzQQ5UQD0QxVNj7p4BIjmImORfy1C7xc0laiqg-V-T0bbVt9oSyhRjbQCZ8w6hYTDduPU_mUgo5Xmg-Ke_R89GNFCyMaGQzsqabBWquiSKzVdZfT17uMAPsxpp0Xz36Rsh4rIoQ7Y5GnccCprnjxfGWxPQfXg5Ys_MVCa40UtMPvB455zIn-3I4F3HV0p-1nd0Te0XU1zB06LPCipOKOhnPw9qk4Nxp0FINPEECqg6-2jS-xKorj_tMyGFv0F1j"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+</div>
+</section>
+
+<!-- RIGHT FORM -->
+<section class="w-full lg:w-1/2 bg-surface flex flex-col items-center justify-center p-8 md:p-16 lg:p-24">
+
+<div class="w-full max-w-md space-y-10">
+
+<div class="text-center">
+<h2 class="font-headline text-4xl text-primary font-medium">Create Account</h2>
+</div>
+
+<!-- ✅ MESSAGES -->
+{% if messages %}
+    {% for message in messages %}
+        <p class="text-center text-sm 
+        {% if message.tags == 'error' %}text-red-500{% else %}text-green-500{% endif %}">
+            {{ message }}
+        </p>
+    {% endfor %}
+{% endif %}
+
+<!-- ✅ FORM -->
+<form method="POST" class="space-y-6">
+{% csrf_token %}
+
+<div class="space-y-4">
+
+<input name="username" placeholder="Username"
+class="w-full border-b py-3 bg-transparent focus:outline-none focus:border-primary" required/>
+
+<input name="email" type="email" placeholder="Email"
+class="w-full border-b py-3 bg-transparent focus:outline-none focus:border-primary" required/>
+
+<input name="password" type="password" placeholder="Password"
+class="w-full border-b py-3 bg-transparent focus:outline-none focus:border-primary" required/>
+
+</div>
+
+<button type="submit"
+class="w-full py-5 rounded-full gold-gradient text-white uppercase hover:opacity-90 transition">
+Register
+</button>
+
+</form>
+
+<!-- ✅ LOGIN LINK FIX -->
+<div class="text-center pt-6">
+<p class="text-sm text-tertiary">
+Already have an account?
+<a href="/login/" class="ml-2 text-primary font-bold">Login</a>
+</p>
+</div>
+
+</div>
+</section>
+
+</main>
+</body>
+</html>

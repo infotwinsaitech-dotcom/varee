@@ -1,0 +1,191 @@
+import hashlib
+import hmac
+import razorpay
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.contrib.auth.models import User, AnonymousUser
+
+from backend.cart.models import CartItem
+from .models import Order, OrderItem
+
+client = razorpay.Client(auth=("rzp_test_SctBLJdpZLfuV2", "s5imSJzeEbJAXBYjEK0ufmng"))
+
+
+# ✅ COMMON USER
+def get_user(request):
+    if request.user.is_authenticated:
+        return request.user
+
+    user, _ = User.objects.get_or_create(username="guest_user")
+    return user
+
+
+# ✅ GET ORDERS
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])   # ✅ नीचे होना चाहिए
+def get_orders(request):
+
+    user = request.user
+
+    orders = Order.objects.filter(user=user).order_by('-id')
+
+    data = []
+
+    for order in orders:
+        items = OrderItem.objects.filter(order=order)
+
+        order_items = []
+        for item in items:
+            order_items.append({
+                "product_name": item.product.name,
+                "quantity": item.quantity,
+                "price": item.price,
+                "product_image": item.product.image.url if item.product.image else ""
+            })
+
+        data.append({
+            "id": order.id,
+            "total_price": order.total_price,
+            "address": order.address,
+            "payment_method": order.payment_method,
+            "status": order.status,
+            "created_at": order.created_at,
+            "items": order_items
+        })
+
+    return Response(data)
+
+@api_view(['GET'])
+def get_order_detail(request, order_id):
+
+    try:
+        order = Order.objects.get(id=order_id)
+
+        items = order.items.all()
+
+        item_data = []
+        for item in items:
+            item_data.append({
+                "name": item.product.name,
+                "image": item.product.image.url if item.product.image else "",
+                "quantity": item.quantity,
+                "price": item.price
+            })
+
+        return Response({
+            "id": order.id,
+            "status": order.status,
+            "total": order.total_price,
+            "address": order.address,
+            "items": item_data
+        })
+
+    except Order.DoesNotExist:
+        return Response({"error": "Order not found"}, status=404)
+
+# ✅ PLACE ORDER (FIXED PRO)
+@api_view(['POST'])
+def place_order(request):
+
+    user = request.user
+
+    if isinstance(user, AnonymousUser):
+        return Response({"error": "Login required"}, status=401)
+
+    address = request.data.get("address")
+    payment_method = request.data.get("payment_method")
+
+    cart_items = CartItem.objects.filter(user=user)
+
+    if not cart_items.exists():
+        return Response({"error": "Cart is empty"}, status=400)
+
+    total = sum(item.product.price * item.quantity for item in cart_items)
+
+    # ✅ CREATE ORDER
+    order = Order.objects.create(
+        user=user,
+        address=address,
+        payment_method=payment_method,
+        total_price=total
+    )
+
+    # ✅ CREATE ORDER ITEMS
+    for item in cart_items:
+        OrderItem.objects.create(
+            order=order,
+            product=item.product,
+            quantity=item.quantity,
+            price=item.product.price
+        )
+
+    # 🧹 CLEAR CART
+    cart_items.delete()
+
+    return Response({"message": "Order placed successfully", "order_id": order.id})
+
+
+# ✅ CANCEL ORDER
+@api_view(['POST'])
+def cancel_order(request, order_id):
+    try:
+        user = get_user(request)
+
+        order = Order.objects.get(id=order_id, user=user)
+        order.status = "cancelled"
+        order.save()
+
+        return Response({"message": "Order cancelled"})
+
+    except Order.DoesNotExist:
+        return Response({"error": "Order not found"}, status=404)
+
+
+# ✅ CREATE PAYMENT
+@api_view(['POST'])
+def create_payment(request):
+
+    user = get_user(request)
+    cart_items = CartItem.objects.filter(user=user)
+
+    if not cart_items.exists():
+        return Response({"error": "Cart is empty"}, status=400)
+
+    total = sum(item.product.price * item.quantity for item in cart_items)
+    amount = int(total * 100)
+
+    payment = client.order.create({
+        "amount": amount,
+        "currency": "INR",
+        "payment_capture": 1
+    })
+
+    return Response(payment)
+
+
+# ✅ VERIFY PAYMENT
+@api_view(['POST'])
+def verify_payment(request):
+
+    order_id = request.data.get("razorpay_order_id")
+    payment_id = request.data.get("razorpay_payment_id")
+    signature = request.data.get("razorpay_signature")
+
+    secret = "s5imSJzeEbJAXBYjEK0ufmng"
+
+    generated_signature = hmac.new(
+        bytes(secret, 'utf-8'),
+        bytes(f"{order_id}|{payment_id}", 'utf-8'),
+        hashlib.sha256
+    ).hexdigest()
+
+    if generated_signature == signature:
+        return Response({"status": "success"})
+    else:
+        return Response({"status": "failed"}, status=400)
+    
+
+    

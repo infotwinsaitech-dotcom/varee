@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wishlist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="p-10 bg-gray-100">
+<div class="flex items-center gap-6">
+
+<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
+<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
+<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+
+<!-- ✅ NEW LINKS -->
+<a href="/profile/" class="text-sm">Profile</a>
+<a href="/terms/" class="text-sm">Terms</a>
+<a href="/shipping/" class="text-sm">Shipping</a>
+<a href="/sustainability/" class="text-sm">Sustainability</a>
+
+<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+
+</div>
+<h1 class="text-2xl mb-6">❤️ Wishlist</h1>
+
+<div id="wishlist-items" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+
+<script>
+async function loadWishlist() {
+    const res = await fetch("/api/wishlist/");
+    const data = await res.json();
+
+    const container = document.getElementById("wishlist-items");
+    container.innerHTML = "";
+
+    data.forEach(item => {
+
+        container.innerHTML += `
+        <div class="bg-white p-4 rounded shadow">
+
+            <img src="http://127.0.0.1:8000${item.product.image}"
+                class="w-full h-40 object-cover mb-2"/>
+
+            <h3>${item.product.name}</h3>
+            <p>₹${item.product.price}</p>
+
+            <button onclick="removeFromWishlist(${item.product.id})"
+                class="mt-3 bg-red-500 text-white px-3 py-1 rounded">
+                Remove
+            </button>
+
+        </div>
+        `;
+    });
+}
+
+async function removeFromWishlist(productId) {
+
+    await fetch(`/api/wishlist/remove/${productId}/`, {
+        method: "POST"
+    });
+
+    loadWishlist();
+}
+
+loadWishlist();
+</script>
+</body>
+</html>

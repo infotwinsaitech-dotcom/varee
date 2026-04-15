@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-gray-100">
+<div class="flex items-center gap-6">
+
+<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
+<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
+<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+
+<!-- ✅ NEW LINKS -->
+<a href="/profile/" class="text-sm">Profile</a>
+<a href="/terms/" class="text-sm">Terms</a>
+<a href="/shipping/" class="text-sm">Shipping</a>
+<a href="/sustainability/" class="text-sm">Sustainability</a>
+
+<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+
+</div>
+<div class="flex">
+
+<!-- SIDEBAR -->
+<aside class="w-64 bg-white h-screen p-6 shadow">
+    <h2 class="text-2xl font-bold mb-10">Varee</h2>
+
+    <ul class="space-y-4">
+        <li><a href="/dashboard/" class="text-blue-600 font-semibold">Dashboard</a></li>
+        <li><a href="/products/">Products</a></li>
+        <li><a href="/orders/">Orders</a></li>
+    </ul>
+</aside>
+
+<!-- MAIN -->
+<main class="flex-1 p-10">
+
+<h1 class="text-3xl font-bold mb-10">📊 Dashboard</h1>
+
+<!-- STATS -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+
+    <div class="bg-white p-6 rounded shadow text-center">
+        <p>Products</p>
+        <h2 id="products" class="text-2xl font-bold">0</h2>
+    </div>
+
+    <div class="bg-white p-6 rounded shadow text-center">
+        <p>Orders</p>
+        <h2 id="orders" class="text-2xl font-bold">0</h2>
+    </div>
+
+    <div class="bg-white p-6 rounded shadow text-center">
+        <p>Users</p>
+        <h2 id="users" class="text-2xl font-bold">0</h2>
+    </div>
+
+    <div class="bg-white p-6 rounded shadow text-center">
+        <p>Revenue</p>
+        <h2 id="revenue" class="text-2xl font-bold">₹0</h2>
+    </div>
+
+</div>
+
+<!-- PRODUCTS TABLE -->
+<div class="bg-white p-6 rounded shadow">
+    <h2 class="text-xl font-bold mb-6">Products</h2>
+
+    <table class="w-full">
+        <thead>
+            <tr class="border-b">
+                <th class="text-left py-2">Image</th>
+                <th class="text-left py-2">Name</th>
+                <th class="text-left py-2">Category</th>
+                <th class="text-left py-2">Price</th>
+            </tr>
+        </thead>
+
+        <tbody id="product-table"></tbody>
+    </table>
+</div>
+
+</main>
+</div>
+
+<script>
+
+// ✅ LOAD DASHBOARD STATS
+async function loadDashboard() {
+    const res = await fetch("/api/dashboard/");
+    const data = await res.json();
+
+    document.getElementById("products").innerText = data.products;
+    document.getElementById("orders").innerText = data.orders;
+    document.getElementById("users").innerText = data.users;
+    document.getElementById("revenue").innerText = "₹" + data.revenue;
+}
+
+// ✅ LOAD PRODUCTS
+async function loadProducts() {
+    const res = await fetch("/api/products/");
+    const products = await res.json();
+
+    const table = document.getElementById("product-table");
+    table.innerHTML = "";
+
+    products.forEach(p => {
+        table.innerHTML += `
+        <tr class="border-b">
+            <td class="py-2">
+                <img src="http://127.0.0.1:8000${p.image}" class="w-16 h-16 object-cover"/>
+            </td>
+            <td>${p.name}</td>
+            <td>${p.category.name}</td>
+            <td>₹${p.price}</td>
+        </tr>
+        `;
+    });
+}
+
+// INIT
+loadDashboard();
+loadProducts();
+
+</script>
+
+</body>
+</html>
