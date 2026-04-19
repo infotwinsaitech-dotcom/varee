@@ -1,11 +1,13 @@
 import os
 from pathlib import Path
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-temp-key'
 DEBUG = True
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "192.168.43.196"]
+ALLOWED_HOSTS = ['*']
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # ========================
 # APPS
@@ -81,12 +83,15 @@ TEMPLATES = [
 # ========================
 # DATABASE
 # ========================
+
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.parse(
+       'postgresql://varee_db_user:YHU6so7f3KhSxxDZuCrduok1JkKsUz3s@dpg-d7ifjcnlk1mc739sf530-a.oregon-postgres.render.com/varee_db'
+    )
 }
+
+
 
 # ========================
 # STATIC FILES
