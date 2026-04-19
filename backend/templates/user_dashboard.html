@@ -2,37 +2,166 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Dashboard</title>
+<title>Dashboard | Varee</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Inter&display=swap" rel="stylesheet">
 </head>
 
-<body class="bg-gray-100 p-10">
-<div class="flex items-center gap-6">
+<body class="bg-[#f6f3ef] font-[Inter]">
 
-<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
-<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
-<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+<div class="flex">
 
-<!-- ✅ NEW LINKS -->
-<a href="/profile/" class="text-sm">Profile</a>
-<a href="/terms/" class="text-sm">Terms</a>
-<a href="/shipping/" class="text-sm">Shipping</a>
-<a href="/sustainability/" class="text-sm">Sustainability</a>
+<!-- SIDEBAR -->
+<div class="w-64 min-h-screen bg-white p-6 flex flex-col justify-between">
 
-<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+<div>
+
+    <h1 class="text-2xl font-[Playfair_Display] mb-10">The Atelier</h1>
+
+    <!-- PROFILE -->
+    <div class="text-center mb-10">
+        <div class="w-20 h-20 mx-auto rounded-full bg-gray-200 overflow-hidden">
+            {% if request.user.profile.image %}
+                <img src="{{ request.user.profile.image.url }}" class="w-full h-full object-cover">
+            {% else %}
+                👤
+            {% endif %}
+        </div>
+
+        <h2 class="mt-3 font-semibold">{{ request.user.username }}</h2>
+        <p class="text-xs text-[#c49b3d]">GOLD MEMBER</p>
+    </div>
+
+    <!-- MENU -->
+    <div class="space-y-4 text-sm">
+
+        <a href="{% url 'user_dashboard' %}" class="block text-[#c49b3d] font-semibold">Dashboard</a>
+
+        <a href="{% url 'orders' %}" class="block text-gray-500 hover:text-black">Orders</a>
+
+        <a href="{% url 'wishlist' %}" class="block text-gray-500 hover:text-black">Wishlist</a>
+
+        <a href="#" class="block text-gray-500 hover:text-black">Styling</a>
+
+        <a href="{% url 'settings' %}" class="block text-gray-500 hover:text-black">Settings</a>
+
+    </div>
 
 </div>
-<h1 class="text-3xl font-bold mb-6">User Dashboard</h1>
 
-<div class="grid grid-cols-2 gap-6">
+<button class="mt-10 bg-gradient-to-r from-[#7a5c00] to-[#d4af37] text-white py-3 rounded-full text-sm">
+    BOOK A STYLIST
+</button>
 
-<a href="/orders/" class="bg-white p-6 rounded shadow">📦 Orders</a>
+</div>
 
-<a href="/profile/" class="bg-white p-6 rounded shadow">👤 Profile</a>
 
-<a href="/wishlist/" class="bg-white p-6 rounded shadow">❤️ Wishlist</a>
+<!-- MAIN -->
+<div class="flex-1 p-8 space-y-6">
 
-<a href="/logout/" class="bg-white p-6 rounded shadow">🚪 Logout</a>
+<!-- TOP NAV -->
+<div class="flex justify-between items-center">
+
+    <div class="flex gap-6 text-sm">
+        <span class="text-[#c49b3d] font-semibold">Dashboard</span>
+        <span>Collections</span>
+        <span>Styling</span>
+        <span>Artisans</span>
+    </div>
+
+    <div class="flex gap-4 items-center">
+        <span>🔍</span>
+        <span>❤️</span>
+        <span>🛍️</span>
+        <span class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">👤</span>
+    </div>
+
+</div>
+
+
+<!-- HERO -->
+<div class="grid grid-cols-3 gap-6">
+
+    <!-- LEFT -->
+    <div class="col-span-2 bg-white p-8 rounded-3xl flex items-center gap-6">
+
+        <div class="w-28 h-28 rounded-full bg-gray-200 flex items-center justify-center">
+            👩
+        </div>
+
+        <div>
+            <p class="text-xs tracking-widest text-gray-400">DIGITAL SANCTUARY</p>
+
+            <h2 class="text-4xl font-[Playfair_Display] mt-2">
+                {{ request.user.username }}
+            </h2>
+
+            <p class="text-gray-500 mt-2 text-sm">
+                Welcome back to your private atelier space.
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="bg-gradient-to-br from-[#c49b3d] to-[#8a6a1f] text-white p-6 rounded-3xl">
+        <p class="text-xs">ATELIER CREDITS</p>
+        <h2 class="text-3xl mt-2">4,280 pts</h2>
+    </div>
+
+</div>
+
+
+<!-- ORDERS -->
+<div>
+    <div class="flex justify-between mb-4">
+        <h2 class="text-2xl font-[Playfair_Display]">Recent Orders</h2>
+    </div>
+
+    <div class="space-y-4">
+
+        {% for order in orders %}
+        <div class="bg-white p-4 rounded-2xl flex justify-between items-center">
+            <div>
+                <p class="text-sm font-semibold">Order #{{ order.id }}</p>
+                <p class="text-xs text-gray-400">{{ order.status }}</p>
+            </div>
+            <p class="font-semibold">₹{{ order.total_price }}</p>
+        </div>
+        {% empty %}
+        <p class="text-gray-400">No orders yet</p>
+        {% endfor %}
+
+    </div>
+</div>
+
+
+<!-- WISHLIST -->
+<div>
+    <h2 class="text-2xl font-[Playfair_Display] mb-4">Wishlist</h2>
+
+    <div class="grid grid-cols-3 gap-4">
+
+        {% for item in wishlist %}
+        <div class="bg-white p-4 rounded-2xl text-center">
+
+            <img src="{{ item.product.image.url }}" class="h-40 w-full object-cover rounded mb-3">
+
+            <p>{{ item.product.name }}</p>
+            <p class="text-sm text-gray-500">₹{{ item.product.price }}</p>
+
+        </div>
+        {% empty %}
+        <p class="text-gray-400">Wishlist empty</p>
+        {% endfor %}
+
+    </div>
+</div>
+
+</div>
 
 </div>
 

@@ -19,6 +19,7 @@ class Order(models.Model):
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
+    cancel_reason = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.username} - Order {self.id}"

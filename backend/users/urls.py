@@ -4,7 +4,8 @@ from .views import (
     logout_view,
     dashboard,
     register_view,
-    user_profile   # 🔥 ADD
+    update_profile,
+    user_profile
 )
 
 urlpatterns = [
@@ -15,4 +16,5 @@ urlpatterns = [
 
     # ✅ PROFILE API
     path('profile/', user_profile),
+    path('profile/update/', update_profile),
 ]

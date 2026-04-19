@@ -1,0 +1,198 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Settings | Varee</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#f5f3ef] text-gray-800">
+
+<div class="flex">
+
+<!-- SIDEBAR -->
+<div class="w-64 bg-white h-screen p-8">
+
+    <h1 class="text-xl mb-10 tracking-widest">VAREE</h1>
+
+    <div class="space-y-6 text-sm">
+
+        <a href="/settings/" class="block font-semibold text-[#7a5c00]">Profile</a>
+        <a href="/settings/security/" class="block text-gray-500 hover:text-black">Security</a>
+        <a href="/settings/notifications/" class="block text-gray-500 hover:text-black">Notifications</a>
+        <a href="/settings/preferences/" class="block text-gray-500 hover:text-black">Preferences</a>
+
+    </div>
+
+</div>
+
+<!-- MAIN -->
+<div class="flex-1 p-14 space-y-12">
+
+    <!-- TITLE -->
+    <h1 class="text-4xl font-semibold">Public Profile</h1>
+
+    <!-- PROFILE -->
+    <div class="bg-white p-10 rounded-[30px] flex gap-10 items-center">
+
+        <div class="relative">
+            <img src="https://i.pravatar.cc/200"
+            class="w-40 h-40 rounded-[30px] object-cover">
+
+            <!-- camera button -->
+            <div class="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow">
+                📷
+            </div>
+        </div>
+
+        <div class="flex-1 space-y-6">
+
+            <div class="grid grid-cols-2 gap-6">
+
+                <div>
+                    <p class="text-xs text-gray-400">DISPLAY NAME</p>
+                    <input id="username"
+                    class="border-b p-2 w-full bg-transparent focus:outline-none"
+                    placeholder="Name">
+                </div>
+
+                <div>
+                    <p class="text-xs text-gray-400">WEBSITE</p>
+                    <input id="website"
+                    class="border-b p-2 w-full bg-transparent focus:outline-none"
+                    placeholder="https://">
+                </div>
+
+            </div>
+
+            <div>
+                <p class="text-xs text-gray-400">BIO</p>
+                <textarea id="bio"
+                class="border-b p-2 w-full bg-transparent focus:outline-none"
+                placeholder="Your bio..."></textarea>
+            </div>
+
+            <div>
+                <p class="text-xs text-gray-400">EMAIL</p>
+                <input id="email"
+                class="border-b p-2 w-full bg-transparent focus:outline-none"
+                placeholder="Email">
+            </div>
+
+            <button onclick="saveProfile()"
+            class="bg-black text-white px-6 py-2 rounded">
+                Save
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- SECURITY -->
+    <div class="bg-[#f1ede7] p-10 rounded-[30px] flex justify-between items-center">
+
+        <div>
+            <h2 class="text-xl font-semibold">Account Security</h2>
+            <p class="text-sm text-gray-400 mt-1">
+                Manage your digital keys and access
+            </p>
+
+            <p class="mt-4 text-sm">
+                <span class="text-gray-400">Email:</span>
+                <span id="email-display"></span>
+            </p>
+        </div>
+
+        <button onclick="changePassword()"
+        class="bg-[#c8a646] text-white px-8 py-3 rounded-full">
+            CHANGE PASSWORD
+        </button>
+
+    </div>
+
+    <!-- GRID SECTION -->
+    <div class="grid grid-cols-2 gap-10">
+
+        <!-- NOTIFICATIONS -->
+        <div class="bg-white p-8 rounded-[30px]">
+
+            <h2 class="text-xl mb-6">Notification Settings</h2>
+
+            <div class="space-y-4 text-sm">
+
+                <label class="flex justify-between items-center">
+                    Email Notifications
+                    <input type="checkbox" checked>
+                </label>
+
+                <label class="flex justify-between items-center">
+                    Push Notifications
+                    <input type="checkbox">
+                </label>
+
+                <label class="flex justify-between items-center">
+                    SMS Alerts
+                    <input type="checkbox" checked>
+                </label>
+
+            </div>
+
+        </div>
+
+        <!-- PREFERENCES -->
+        <div class="bg-[#efe6d3] p-8 rounded-[30px]">
+
+            <h2 class="text-xl mb-6">Preferences</h2>
+
+            <div class="space-y-4">
+
+                <div>
+                    <p class="text-xs text-gray-400">CURRENCY</p>
+                    <select class="w-full border-b bg-transparent p-2">
+                        <option>USD ($)</option>
+                        <option>INR (₹)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <p class="text-xs text-gray-400">LANGUAGE</p>
+                    <select class="w-full border-b bg-transparent p-2">
+                        <option>English</option>
+                        <option>Hindi</option>
+                    </select>
+                </div>
+
+                <div class="mt-6">
+                    <p class="text-xs text-gray-400">MEMBERSHIP</p>
+                    <p class="font-semibold">Gold Atelier</p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- DELETE -->
+    <div class="flex justify-between items-center mt-10">
+
+        <div class="text-sm text-gray-400">
+            Data & Privacy<br>
+            Request a copy of your data
+        </div>
+
+        <button onclick="deleteAccount()"
+        class="text-red-500 border border-red-300 px-5 py-2 rounded-full">
+            Delete My Account
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+<script src="{% static 'js/settings.js' %}"></script>
+
+</body>
+</html>

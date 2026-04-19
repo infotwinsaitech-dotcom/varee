@@ -1,81 +1,196 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Profile</title>
+    <title>Dashboard | Varee</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-100 p-10">
-<div class="flex items-center gap-6">
+<body class="bg-gradient-to-r from-[#f4dada] to-[#f3e5c8] text-gray-800">
 
-<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
-<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
-<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+<!-- HEADER -->
+<div class="flex justify-between items-center px-12 py-6">
+    <h1 class="tracking-widest text-lg">VAREE</h1>
 
-<!-- ✅ NEW LINKS -->
-<a href="/profile/" class="text-sm">Profile</a>
-<a href="/terms/" class="text-sm">Terms</a>
-<a href="/shipping/" class="text-sm">Shipping</a>
-<a href="/sustainability/" class="text-sm">Sustainability</a>
+    <div class="flex gap-10 text-sm text-gray-600">
+        <a href="/user-dashboard/" class="font-semibold">Dashboard</a>
+        <a href="/products/">Collections</a>
+        <a href="#">Artisans</a>
+    </div>
 
-<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
-
+    <div class="flex gap-4 text-xl">
+        🛍️ 👤
+    </div>
 </div>
-<h1 class="text-2xl mb-6">👤 My Profile</h1>
 
-<div class="bg-white p-6 rounded shadow w-[400px]">
+<div class="flex px-10 gap-10">
 
-    <label class="block mb-2">Name</label>
-    <input id="name" class="w-full border p-2 mb-4 rounded"/>
+<!-- SIDEBAR -->
+<div class="w-64 bg-white rounded-[30px] p-6 h-[85vh]">
 
-    <label class="block mb-2">Email</label>
-    <input id="email" class="w-full border p-2 mb-4 rounded"/>
+    <div class="text-center">
+        <!-- ✅ FIX: ID added -->
+ <img id="profile-image"
+src="/static/default.png"
+onerror="this.src='https://i.pravatar.cc/100'"
+class="w-20 h-20 rounded-full mx-auto mb-3 object-cover">
 
-    <label class="block mb-2">Phone</label>
-    <input id="phone" class="w-full border p-2 mb-4 rounded"/>
+        <h2 id="sidebar-name" class="font-semibold"></h2>
 
-    <button onclick="saveProfile()"
-        class="bg-black text-white px-4 py-2 rounded w-full">
-        Save Changes
+        <span class="bg-yellow-200 text-xs px-3 py-1 rounded-full">
+            GOLD MEMBER
+        </span>
+    </div>
+
+    <div class="mt-10 space-y-5 text-sm">
+
+        <a href="/profile/" class="block font-semibold">👤 Profile</a>
+        <a href="/orders/" class="block text-gray-500">📦 Orders</a>
+        <a href="/wishlist/" class="block text-gray-500">❤️ Wishlist</a>
+        <a href="/settings/" class="block text-gray-500">⚙️ Settings</a>
+        <a href="/settings/security/" class="block text-gray-500">
+    🔐 Security
+</a>
+
+    </div>
+
+    <button onclick="contactStylist()"
+    class="mt-10 w-full bg-[#7a5c00] text-white py-3 rounded-full">
+        CONTACT STYLIST
     </button>
 
 </div>
 
-<script>
-// LOAD DATA
-async function loadProfile() {
-    const res = await fetch("/api/profile/");
-    const data = await res.json();
+<!-- MAIN -->
+<div class="flex-1 space-y-8">
 
-    document.getElementById("name").value = data.name;
-    document.getElementById("email").value = data.email;
-    document.getElementById("phone").value = data.phone;
-}
+    <!-- TOP CARD -->
+    <div class="grid grid-cols-3 gap-6">
 
-// SAVE DATA
-async function saveProfile() {
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const phone = document.getElementById("phone").value;
+        <div class="col-span-2 bg-white rounded-[30px] p-8 flex justify-between items-center">
 
-    await fetch("/api/profile/update/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            name,
-            email,
-            phone
-        })
-    });
+            <div class="flex gap-6 items-center">
 
-    alert("✅ Profile Saved");
-}
+                <!-- ✅ FIX: ID added -->
+<img id="profile-image-big"
+src="/static/default.png"
+onerror="this.src='https://i.pravatar.cc/120'"
+class="w-24 h-24 rounded-2xl object-cover">
 
 
-loadProfile();
-</script>
+                <div>
+                    <h2 class="text-3xl font-semibold">
+                        Welcome back, <span id="name"></span>
+                    </h2>
+
+                    <p class="text-gray-400 text-sm mt-2">
+                        Your style journey is unfolding beautifully.
+                    </p>
+
+                    <div class="flex gap-4 mt-4 text-sm">
+                        <span class="bg-gray-100 px-3 py-1 rounded-full">
+                            Gold Membership
+                        </span>
+                        <span class="bg-gray-100 px-3 py-1 rounded-full">
+                            Since 2024
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+
+         <button onclick="toggleEdit()"
+        class="border px-4 py-2 rounded-full text-sm">
+            Edit Profile
+        </button>
+        </div>
+
+        <!-- SALE -->
+        <div class="bg-gradient-to-br from-yellow-200 to-yellow-400 rounded-[30px] p-6">
+
+            <p class="text-xs">LIMITED ACCESS</p>
+
+            <h2 class="text-xl font-semibold mt-2">
+                Private Spring Sale
+            </h2>
+
+            <p class="text-sm mt-2">
+                Curated for Gold Members
+            </p>
+
+            <button onclick="goCollection()"
+            class="bg-black text-white py-2 rounded-full mt-6 w-full">
+                EXPLORE COLLECTION
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- EDIT BOX -->
+    <div id="editBox" class="bg-white p-6 rounded-[30px] hidden">
+
+        <input id="edit-name"
+        class="border p-2 w-full mb-3 rounded"
+        placeholder="Name">
+
+        <input id="edit-email"
+        class="border p-2 w-full mb-3 rounded"
+        placeholder="Email">
+
+        <!-- IMAGE -->
+        <input type="file" id="edit-image"
+        class="border p-2 w-full mb-3 rounded">
+
+        <!-- PREVIEW -->
+        <img id="preview"
+        class="w-20 h-20 rounded mb-3 hidden object-cover">
+
+        <button onclick="saveProfile()"
+        class="bg-black text-white px-6 py-2 rounded">
+            Save
+        </button>
+
+    </div>
+
+    <!-- SECURITY -->
+    <div id="security" class="bg-white p-8 rounded-[30px]">
+
+        <h2 class="text-xl font-semibold mb-4">Account Security</h2>
+
+        <div class="flex justify-between items-center">
+
+            <div>
+                <p class="text-xs text-gray-400">EMAIL</p>
+                <p id="user-email" class="font-semibold"></p>
+            </div>
+
+            <button onclick="changePassword()"
+            class="bg-[#c8a646] text-white px-6 py-3 rounded-full">
+                CHANGE PASSWORD
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- ORDERS -->
+    <div class="bg-white rounded-[30px] p-6">
+
+        <div class="flex justify-between mb-4">
+            <h3 class="font-semibold">Recent Orders</h3>
+            <a href="/orders/" class="text-sm underline">View All</a>
+        </div>
+
+        <div id="orders-box"></div>
+
+    </div>
+
+</div>
+
+</div>
+
+<script src="{% static 'js/profile.js' %}"></script>
 
 </body>
 </html>

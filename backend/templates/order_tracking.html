@@ -1,68 +1,225 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Order Tracking</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<title>Track Order | Varee</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body { font-family: 'Inter', sans-serif; }
+h1 { font-family: 'Playfair Display', serif; }
+</style>
+
 </head>
 
-<body class="bg-gray-100 p-10">
-<div class="flex items-center gap-6">
+<body class="bg-[#f6f5f2] text-gray-800">
 
-<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
-<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
-<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+<!-- HEADER -->
+<div class="flex justify-between items-center px-16 py-6">
+    <h1 class="tracking-[0.3em] text-lg">VAREE</h1>
 
-<!-- ✅ NEW LINKS -->
-<a href="/profile/" class="text-sm">Profile</a>
-<a href="/terms/" class="text-sm">Terms</a>
-<a href="/shipping/" class="text-sm">Shipping</a>
-<a href="/sustainability/" class="text-sm">Sustainability</a>
+    <div class="flex gap-10 text-sm text-gray-500">
+        <a href="#">Collections</a>
+        <a href="#">Lookbook</a>
+        <a href="#">Atelier</a>
+        <a href="#">Archive</a>
+    </div>
 
-<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+    <div class="flex gap-4 text-xl">
+        🛍️ 👤
+    </div>
+</div>
+
+<!-- TITLE -->
+<div class="text-center mt-6">
+    <h1 class="text-[60px] text-[#7a5c00]">Track Your Order</h1>
+
+    <p class="text-gray-400 mt-2 text-sm">
+        ORDER #VR-<span id="order-id"></span>
+    </p>
+</div>
+
+<!-- PROGRESS -->
+<div class="px-16 mt-10">
+    <div class="bg-white rounded-[40px] p-10 flex justify-between items-center">
+
+        <div class="flex items-center justify-between w-full">
+
+            <div class="text-center flex-1">
+                <div id="step-0" class="w-12 h-12 mx-auto rounded-full flex items-center justify-center">✓</div>
+                <p class="text-xs mt-2">ORDER PLACED</p>
+            </div>
+
+            <div class="flex-1 h-[2px] bg-gray-200"></div>
+
+            <div class="text-center flex-1">
+                <div id="step-1" class="w-12 h-12 mx-auto rounded-full flex items-center justify-center">📦</div>
+                <p class="text-xs mt-2">PACKED</p>
+            </div>
+
+            <div class="flex-1 h-[2px] bg-gray-200"></div>
+
+            <div class="text-center flex-1">
+                <div id="step-2" class="w-12 h-12 mx-auto rounded-full flex items-center justify-center">🚚</div>
+                <p class="text-xs mt-2">SHIPPED</p>
+            </div>
+
+            <div class="flex-1 h-[2px] bg-gray-200"></div>
+
+            <div class="text-center flex-1">
+                <div id="step-3" class="w-12 h-12 mx-auto rounded-full flex items-center justify-center">🚚</div>
+                <p class="text-xs mt-2">OUT FOR DELIVERY</p>
+            </div>
+
+            <div class="flex-1 h-[2px] bg-gray-200"></div>
+
+            <div class="text-center flex-1">
+                <div id="step-4" class="w-12 h-12 mx-auto rounded-full flex items-center justify-center">✓</div>
+                <p class="text-xs mt-2">DELIVERED</p>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="px-16 mt-10 grid grid-cols-2 gap-10">
+
+    <!-- LEFT -->
+    <div class="bg-white rounded-[40px] p-10">
+
+        <h2 class="text-2xl mb-6" id="status-text">Loading...</h2>
+
+        <div class="space-y-6 text-sm text-gray-600">
+
+            <div>
+                <p class="text-xs text-gray-400">DELIVERY PARTNER</p>
+                <p class="font-semibold" id="partner">--</p>
+            </div>
+
+            <div>
+                <p class="text-xs text-gray-400">PHONE</p>
+                <p class="font-semibold" id="phone">--</p>
+            </div>
+
+            <div>
+                <p class="text-xs text-gray-400">ESTIMATED DELIVERY</p>
+                <p class="font-semibold" id="date">--</p>
+            </div>
+
+        </div>
+
+        <button onclick="downloadInvoice()"
+        class="mt-8 w-full py-4 rounded-full text-white"
+        style="background:#7a5c00">
+            VIEW ORDER RECEIPT →
+        </button>
+
+    </div>
+
+    <!-- MAP -->
+    <div class="bg-[#eae6df] rounded-[40px] p-4 relative">
+
+        <div class="h-[420px] rounded-[30px] bg-gray-300 flex items-center justify-center">
+            Map Tracking
+        </div>
+
+        <div class="absolute bottom-6 left-6 bg-white px-6 py-3 rounded-full shadow text-sm">
+            <span class="text-gray-400 text-xs">CURRENT STATUS</span><br>
+            <span class="font-semibold" id="current-status">--</span>
+        </div>
+
+    </div>
 
 </div>
-<h1 class="text-2xl mb-6">Track Order</h1>
-
-<div id="box" class="bg-white p-6 rounded shadow"></div>
 
 <script>
 
+// ==========================
+// GET ORDER ID
+// ==========================
 const orderId = window.location.pathname.split("/")[2];
 
-async function loadOrder() {
+// ==========================
+// LOAD DATA
+// ==========================
+async function loadTracking() {
 
     const res = await fetch(`/api/orders/${orderId}/`);
     const data = await res.json();
 
-    let itemsHTML = "";
+    document.getElementById("order-id").innerText = data.id;
 
-    data.items.forEach(item => {
-        itemsHTML += `
-        <div class="flex gap-4 mb-4">
-            <img src="http://127.0.0.1:8000${item.image}" class="w-20 h-20">
-            <div>
-                <p>${item.name}</p>
-                <p>Qty: ${item.quantity}</p>
-                <p>₹${item.price}</p>
-            </div>
-        </div>
-        `;
-    });
+    // ======================
+    // STATUS TEXT
+    // ======================
+    const statusMap = {
+        pending: "Order placed successfully",
+        processing: "Your order is being packed",
+        shipped: "Your order is on the way 🚚",
+        delivered: "Order delivered successfully"
+    };
 
-    document.getElementById("box").innerHTML = `
-        <h2 class="text-xl mb-2">Order #${data.id}</h2>
-        <p>Status: <b>${data.status}</b></p>
-        <p>Address: ${data.address}</p>
+    document.getElementById("status-text").innerText =
+        statusMap[data.status] || "Processing...";
 
-        <div class="mt-4">
-            ${itemsHTML}
-        </div>
+    // ======================
+    // DYNAMIC INFO
+    // ======================
+    document.getElementById("partner").innerText = "Varee Express";
+    document.getElementById("phone").innerText = "+91 9876543210";
 
-        <h3 class="mt-4 font-bold">Total: ₹${data.total}</h3>
-    `;
+    const date = new Date(data.created_at);
+    date.setDate(date.getDate() + 3); // delivery after 3 days
+
+    document.getElementById("date").innerText =
+        date.toDateString();
+
+    document.getElementById("current-status").innerText =
+        data.status.toUpperCase();
+
+    // ======================
+    // STEPS ACTIVE
+    // ======================
+    let current = 0;
+
+    if (data.status === "pending") current = 0;
+    if (data.status === "processing") current = 1;
+    if (data.status === "shipped") current = 2;
+    if (data.status === "delivered") current = 4;
+
+    for (let i = 0; i <= current; i++) {
+        document.getElementById(`step-${i}`).classList.add("bg-[#5c3d2e]", "text-white");
+    }
 }
 
-loadOrder();
+// ==========================
+// DOWNLOAD RECEIPT
+// ==========================
+function downloadInvoice() {
+
+    const content = `
+VAREE RECEIPT
+-------------------
+Order ID: ${orderId}
+
+Thank you for shopping ❤️
+`;
+
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `invoice_${orderId}.txt`;
+    a.click();
+}
+
+// INIT
+loadTracking();
 
 </script>
 

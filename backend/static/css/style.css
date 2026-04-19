@@ -188,6 +188,7 @@ nav {
 .summary-card {
     background: #fff;
     border-radius: 28px;
+    height: fit-content;
     padding: 30px;
     box-shadow:
         0 10px 30px rgba(0,0,0,0.05),
@@ -458,6 +459,38 @@ button:active {
 .remove-btn:active {
     transform: scale(0.95);
 }
+
+.payment-box:hover {
+    transform: translateY(-2px);
+}
+
+
+
+.delivery-box {
+    padding: 20px;
+    border-radius: 20px;
+    background: #fff;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 1px solid #eee;
+}
+
+.delivery-box.active {
+    background: #f3eadf;
+    border: 2px solid #c8a646;
+}
+
+.payment-box {
+    background: #fff;
+    border: 1px solid #eee;
+    transition: 0.3s;
+}
+
+.payment-box.active {
+    border: 2px solid #c8a646;
+    background: #fffdf7;
+}
+
 
 
 

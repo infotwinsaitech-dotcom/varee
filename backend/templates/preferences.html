@@ -1,0 +1,205 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Preferences | Varee</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#f6f3ee] text-gray-800">
+
+<div class="flex">
+
+<!-- SIDEBAR -->
+<div class="w-72 bg-[#f2efe9] h-screen p-8 rounded-r-[40px]">
+
+    <div class="flex items-center gap-3 mb-10">
+        <img src="https://i.pravatar.cc/40" class="rounded-full">
+        <div>
+            <p class="font-semibold text-sm">The Atelier</p>
+            <p class="text-xs text-gray-400">Curated for you</p>
+        </div>
+    </div>
+
+    <div class="space-y-6 text-sm">
+
+        <a href="/settings/" class="block text-gray-400">👤 Profile</a>
+        <a href="/settings/security/" class="block text-gray-400">🛡 Security</a>
+        <a href="/settings/notifications/" class="block text-gray-400">🔔 Notifications</a>
+
+        <a href="/settings/preferences/"
+        class="block font-semibold text-[#7a5c00] border-l-2 border-[#7a5c00] pl-3">
+        ⚙ Preferences
+        </a>
+
+    </div>
+
+    <button class="mt-10 bg-[#7a5c00] text-white px-6 py-3 rounded-full w-full shadow">
+        BOOK PRIVATE VIEWING
+    </button>
+
+</div>
+
+<!-- MAIN -->
+<div class="flex-1 p-16 space-y-12">
+
+    <!-- TITLE -->
+    <div>
+        <p class="text-xs text-gray-400 tracking-widest">SETTINGS / PREFERENCES</p>
+        <h1 class="text-5xl font-serif">
+            Refining Your <span class="text-[#7a5c00] italic">Experience</span>
+        </h1>
+
+        <p class="text-gray-500 mt-4 max-w-xl">
+            Tailor the Varee Atelier to your personal standards.
+        </p>
+    </div>
+
+    <!-- TOP GRID -->
+    <div class="grid grid-cols-3 gap-10">
+
+        <!-- MEMBERSHIP -->
+        <div class="col-span-2 bg-[#efebe6] p-10 rounded-[40px] flex justify-between items-center">
+
+            <div>
+                <span class="bg-yellow-200 text-xs px-3 py-1 rounded-full">
+                    MEMBERSHIP STATUS
+                </span>
+
+                <h2 class="text-3xl font-semibold mt-4">Gold Atelier</h2>
+
+                <p class="text-gray-500 mt-2">
+                    Exclusive early access to collections.
+                </p>
+
+                <p class="text-[#7a5c00] mt-3 cursor-pointer">
+                    View Benefits →
+                </p>
+            </div>
+
+            <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6"
+            class="w-40 h-40 object-cover rounded-2xl">
+
+        </div>
+
+        <!-- REGION -->
+        <div class="bg-[#efebe6] p-8 rounded-[40px] space-y-6">
+
+            <h3 class="font-semibold">🌍 Regional</h3>
+
+            <div>
+                <p class="text-xs text-gray-400">CURRENCY</p>
+                <select class="w-full mt-1 p-2 bg-transparent border-b outline-none">
+                    <option>USD — US Dollar</option>
+                    <option>INR — Rupee</option>
+                </select>
+            </div>
+
+            <div>
+                <p class="text-xs text-gray-400">LANGUAGE</p>
+                <select class="w-full mt-1 p-2 bg-transparent border-b outline-none">
+                    <option>English</option>
+                    <option>Hindi</option>
+                </select>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- SECOND GRID -->
+    <div class="grid grid-cols-2 gap-10">
+
+        <!-- MEASUREMENT -->
+        <div class="bg-[#efebe6] p-10 rounded-[40px]">
+
+            <h3 class="font-semibold mb-6">📏 Measurement</h3>
+
+            <div class="flex gap-4">
+
+                <button onclick="selectUnit(this)"
+                class="unit active">
+                    Metric
+                </button>
+
+                <button onclick="selectUnit(this)"
+                class="unit">
+                    Imperial
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- ACCESSIBILITY -->
+        <div class="bg-[#efebe6] p-10 rounded-[40px] space-y-6">
+
+            <h3 class="font-semibold">Accessibility</h3>
+
+            <div class="flex justify-between items-center">
+                <div>
+                    <p>High Contrast</p>
+                    <p class="text-xs text-gray-500">Better visibility</p>
+                </div>
+                <div onclick="toggle(this)" class="toggle"></div>
+            </div>
+
+            <div class="flex justify-between items-center">
+                <div>
+                    <p>Larger Text</p>
+                    <p class="text-xs text-gray-500">Better reading</p>
+                </div>
+                <div onclick="toggle(this)" class="toggle active"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+<!-- STYLE -->
+<style>
+.toggle {
+    width: 42px;
+    height: 22px;
+    background: #ddd;
+    border-radius: 20px;
+    position: relative;
+    cursor: pointer;
+}
+.toggle::after {
+    content: "";
+    width: 18px;
+    height: 18px;
+    background: white;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+.toggle.active {
+    background: #7a5c00;
+}
+.toggle.active::after {
+    left: 22px;
+}
+
+.unit {
+    padding: 12px 25px;
+    border-radius: 12px;
+    background: #f3f3f3;
+}
+.unit.active {
+    background: #efe4cf;
+    border: 1px solid #7a5c00;
+}
+</style>
+
+<script src="{% static 'js/preferences.js' %}"></script>
+
+</body>
+</html>

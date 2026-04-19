@@ -1,0 +1,236 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notifications | Varee</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#f6f3ee] text-gray-800">
+
+<div class="flex">
+
+<!-- SIDEBAR -->
+<div class="w-72 bg-[#f2efe9] h-screen p-8 rounded-r-[40px]">
+
+    <div class="flex items-center gap-3 mb-10">
+        <img src="https://i.pravatar.cc/40" class="rounded-full">
+        <div>
+            <p class="font-semibold text-sm">The Atelier</p>
+            <p class="text-xs text-gray-400">Curated for you</p>
+        </div>
+    </div>
+
+    <div class="space-y-6 text-sm">
+
+        <a href="/settings/" class="block text-gray-400">👤 Profile</a>
+        <a href="/settings/security/" class="block text-gray-400">🛡 Security</a>
+
+        <a href="/settings/notifications/"
+        class="block font-semibold text-[#7a5c00] border-l-2 border-[#7a5c00] pl-3">
+        🔔 Notifications
+        </a>
+
+        <a href="/settings/preferences/" class="block text-gray-400">⚙ Preferences</a>
+
+    </div>
+
+    <button class="mt-10 bg-[#7a5c00] text-white px-6 py-3 rounded-full w-full shadow">
+        BOOK PRIVATE VIEWING
+    </button>
+
+</div>
+
+<!-- MAIN -->
+<div class="flex-1 p-16 space-y-12">
+
+    <!-- TITLE -->
+    <div>
+        <p class="text-xs text-gray-400 tracking-widest">SETTINGS</p>
+        <h1 class="text-5xl font-serif">Notification Preferences</h1>
+        <p class="text-gray-400 mt-2">
+            Tailor how VAREE connects with you
+        </p>
+    </div>
+
+    <!-- GRID -->
+    <div class="grid grid-cols-3 gap-10">
+
+        <!-- EMAIL -->
+        <div class="col-span-2 bg-[#efebe6] p-10 rounded-[40px] space-y-8">
+
+            <h2 class="text-xl font-semibold flex items-center gap-2">
+                📧 Email Notifications
+            </h2>
+
+            <!-- ITEM -->
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="font-medium">Promotions</p>
+                    <p class="text-xs text-gray-500">Exclusive offers & sales</p>
+                </div>
+
+                <div onclick="toggle(this)" class="toggle active"></div>
+            </div>
+
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="font-medium">Order Updates</p>
+                    <p class="text-xs text-gray-500">Shipping & confirmations</p>
+                </div>
+
+                <div onclick="toggle(this)" class="toggle active"></div>
+            </div>
+
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="font-medium">Newsletters</p>
+                    <p class="text-xs text-gray-500">Editorial content</p>
+                </div>
+
+                <div onclick="toggle(this)" class="toggle"></div>
+            </div>
+
+        </div>
+
+        <!-- PUSH -->
+        <div class="bg-[#efebe6] p-10 rounded-[40px] space-y-6">
+
+            <h2 class="text-xl font-semibold">🔔 Push Alerts</h2>
+
+            <div class="flex justify-between">
+                <span>New Arrivals</span>
+                <div onclick="toggle(this)" class="toggle active"></div>
+            </div>
+
+            <div class="flex justify-between">
+                <span>Restock Alerts</span>
+                <div onclick="toggle(this)" class="toggle"></div>
+            </div>
+
+            <div class="flex justify-between">
+                <span>Account Activity</span>
+                <div onclick="toggle(this)" class="toggle active"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- SECOND GRID -->
+    <div class="grid grid-cols-3 gap-10">
+
+        <!-- FREQUENCY -->
+        <div class="col-span-2 bg-[#efebe6] p-10 rounded-[40px]">
+
+            <h2 class="text-xl mb-6">⏱ Frequency Control</h2>
+
+            <div class="flex gap-6">
+
+                <button onclick="selectFreq(this)"
+                class="freq active">
+                    Instant
+                    <span class="text-xs block text-gray-400">Real-time</span>
+                </button>
+
+                <button onclick="selectFreq(this)"
+                class="freq">
+                    Daily Digest
+                    <span class="text-xs block text-gray-400">Evening</span>
+                </button>
+
+                <button onclick="selectFreq(this)"
+                class="freq">
+                    Weekly
+                    <span class="text-xs block text-gray-400">Friday</span>
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- SMS -->
+        <div class="bg-[#efe4cf] p-10 rounded-[40px] space-y-5">
+
+            <h2 class="text-xl font-semibold">💬 SMS Alerts</h2>
+
+            <div class="flex justify-between">
+                <span>Order Tracking</span>
+                <div onclick="toggle(this)" class="toggle active"></div>
+            </div>
+
+            <div class="flex justify-between">
+                <span>Security Alerts</span>
+                <div onclick="toggle(this)" class="toggle active"></div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl text-xs text-gray-500 mt-4">
+                SMS rates may apply from your provider
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="flex justify-between items-center pt-10 border-t">
+
+        <button class="text-gray-400">
+            Discard Changes
+        </button>
+
+        <button onclick="savePreferences()"
+        class="bg-[#7a5c00] text-white px-10 py-3 rounded-full shadow-lg">
+            Save Preferences
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+<!-- STYLES -->
+<style>
+.toggle {
+    width: 42px;
+    height: 22px;
+    background: #ddd;
+    border-radius: 20px;
+    position: relative;
+    cursor: pointer;
+}
+.toggle::after {
+    content: "";
+    width: 18px;
+    height: 18px;
+    background: white;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+.toggle.active {
+    background: #7a5c00;
+}
+.toggle.active::after {
+    left: 22px;
+}
+
+.freq {
+    background: #f3f3f3;
+    padding: 20px 25px;
+    border-radius: 20px;
+    text-align: center;
+}
+.freq.active {
+    background: #efe4cf;
+    border: 1px solid #7a5c00;
+}
+</style>
+
+<script src="{% static 'js/notifications.js' %}"></script>
+
+</body>
+</html>

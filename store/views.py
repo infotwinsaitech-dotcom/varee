@@ -6,6 +6,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from backend.cart.models import CartItem 
 import requests
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from backend.orders.models import Order, OrderItem
 
@@ -26,13 +28,12 @@ def register(request):
             messages.error(request, "Username already exists")
             return redirect('register')
 
-        User.objects.create_user(username=username, email=email, password=password)
+        user = User.objects.create_user(username=username, email=email, password=password)
 
         messages.success(request, "Account created! Please login")
         return redirect('login')
 
     return render(request, 'register.html')
-
 
 # ===============================
 # LOGIN
@@ -44,14 +45,13 @@ def login_view(request):
 
         user = authenticate(request, username=username, password=password)
 
-        if user is not None:
+        if user:
             login(request, user)
             return redirect('/home/')
         else:
             messages.error(request, "Invalid credentials")
 
     return render(request, 'login.html')
-
 
 # ===============================
 # HOME
@@ -67,49 +67,9 @@ def home(request):
 # ===============================
 def logout_view(request):
     logout(request)
-    return redirect('/')
+    return redirect('/login/')
 
 
-# ===============================
-# FORGOT PASSWORD (SEND OTP)
-# ===============================
-def forgot_password(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-
-        if not User.objects.filter(email=email).exists():
-            messages.error(request, "Email not found")
-            return redirect('forgot_password')
-
-        # ✅ OTP generate
-        otp = str(random.randint(100000, 999999))
-
-        # ✅ session me save
-        request.session['reset_email'] = email
-        request.session['otp'] = otp
-
-        print("🔥 OTP:", otp)  # 👉 console me milega
-
-        messages.success(request, "OTP sent (check console)")
-        return redirect('verify_otp')
-
-    return render(request, 'forgot_password.html')
-
-
-# ===============================
-# VERIFY OTP
-# ===============================
-def verify_otp(request):
-    if request.method == 'POST':
-        user_otp = request.POST.get('otp')
-        session_otp = request.session.get('otp')
-
-        if user_otp == session_otp:
-            return redirect('reset_password')
-        else:
-            messages.error(request, "Invalid OTP")
-
-    return render(request, 'otp.html')
 
 
 # ===============================
@@ -272,7 +232,7 @@ def checkout(request):
 
         print("✅ ORDER CREATED")
 
-        return redirect("/orders/")
+        return redirect('/success/') 
 
     return render(request, "checkout.html")
 
@@ -284,3 +244,156 @@ def shipping(request):
 
 def sustainability(request):
     return render(request, 'sustainability.html')
+
+def success_page(request):
+    return render(request, 'success.html')
+
+def settings_page(request):
+    return render(request, "settings.html")
+
+@login_required
+def settings_page(request):
+    return render(request, "settings.html")
+
+@login_required
+def security_page(request):
+    return render(request, "security.html")
+
+@login_required
+def notifications_page(request):
+    return render(request, "notifications.html")
+
+@login_required
+def preferences_page(request):
+    return render(request, "preferences.html")
+
+
+import random
+
+def otp_login_page(request):
+
+    mobile = request.GET.get('mobile')
+
+    # ✅ OTP GENERATE
+    otp = str(random.randint(100000, 999999))
+
+    # ✅ SESSION में SAVE
+    request.session['login_mobile'] = mobile
+    request.session['login_otp'] = otp
+
+    # 🔥 TERMINAL में दिखेगा
+    print("🔥 LOGIN OTP:", otp)
+
+    return render(request, 'otp_login.html', {'mobile': mobile})
+
+def verify_login_otp(request):
+
+    if request.method == "POST":
+
+        user_otp = request.POST.get("otp")
+        session_otp = request.session.get("login_otp")
+        mobile = request.session.get("login_mobile")
+
+        if user_otp == session_otp:
+
+            from django.contrib.auth.models import User
+            from django.contrib.auth import login
+
+            user, created = User.objects.get_or_create(username=mobile)
+
+            login(request, user)
+
+            return redirect('/home/')
+
+        else:
+            from django.contrib import messages
+            messages.error(request, "Invalid OTP")
+            return redirect('/otp-login/')
+
+    return redirect('/login/')
+
+def verify_otp(request):
+
+    if request.method == 'POST':
+
+        user_otp = request.POST.get('otp')
+        session_otp = request.session.get('otp')
+
+        if user_otp == session_otp:
+            return redirect('reset_password')
+
+        else:
+            messages.error(request, "Invalid OTP")
+            return redirect('verify_otp')
+
+    mobile = request.GET.get('mobile')
+
+    return render(request, 'otp.html', {'mobile': mobile})
+
+
+def forgot_password(request):
+
+    if request.method == "POST":
+
+        email = request.POST.get("email")
+        mobile = request.POST.get("mobile")
+
+        # ===== EMAIL =====
+        if email:
+
+            if not User.objects.filter(email=email).exists():
+                messages.error(request, "Email not found")
+                return redirect('forgot_password')
+
+            otp = str(random.randint(100000, 999999))
+
+            request.session['reset_email'] = email
+            request.session['otp'] = otp
+
+            print("🔥 EMAIL OTP:", otp)
+
+            return redirect('/verify-otp/')   # ✅ सही
+
+        # ===== MOBILE =====
+        if mobile:
+
+            otp = str(random.randint(100000, 999999))
+
+            request.session['reset_mobile'] = mobile
+            request.session['otp'] = otp
+
+            print("🔥 MOBILE OTP:", otp)
+
+            return redirect('/verify-otp/?mobile=' + mobile)   # ✅ FIX
+
+    return render(request, 'forgot_password.html')
+@login_required
+def user_dashboard(request):
+    orders = Order.objects.filter(user=request.user).order_by('-id')[:5]
+
+    return render(request, 'user_dashboard.html', {
+        'orders': orders
+    })
+
+def product_list(request):
+    products = Product.objects.all()
+
+    # 🔍 SEARCH
+    query = request.GET.get('q')
+    if query:
+        products = products.filter(name__icontains=query)
+
+    # 💰 PRICE FILTER
+    min_price = request.GET.get('min')
+    max_price = request.GET.get('max')
+
+    if min_price:
+        products = products.filter(price__gte=min_price)
+
+    if max_price:
+        products = products.filter(price__lte=max_price)
+
+    return render(request, 'products_listing_filter.html', {
+        'products': products
+    })
+

@@ -1,92 +1,236 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Order Detail</title>
+<meta charset="UTF-8">
+<title>Order Detail | Varee</title>
 
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script src="{% static 'js/script.js' %}"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="{% static 'js/script.js' %}"></script>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+<style>
+body { font-family: 'Inter', sans-serif; }
+h1 { font-family: 'Playfair Display', serif; }
+</style>
+
 </head>
 
-<body class="bg-gray-100 p-10 font-sans">
-<div class="flex items-center gap-6">
+<body class="bg-[#f6f5f2] text-gray-800">
 
-<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
-<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
-<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+<!-- NAVBAR -->
+<nav class="flex justify-between px-16 py-6 border-b">
+    <h1 class="text-2xl tracking-wide text-[#7a5c00]">MUSE</h1>
 
-<!-- ✅ NEW LINKS -->
-<a href="/profile/" class="text-sm">Profile</a>
-<a href="/terms/" class="text-sm">Terms</a>
-<a href="/shipping/" class="text-sm">Shipping</a>
-<a href="/sustainability/" class="text-sm">Sustainability</a>
+    <div class="flex gap-10 text-gray-500 text-sm">
+        <a href="#">Collections</a>
+        <a href="#">Lookbook</a>
+        <a href="#">Atelier</a>
+        <a href="#">Archive</a>
+    </div>
 
-<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+    <div class="flex gap-4 text-xl">
+        🛍️ 👤
+    </div>
+</nav>
 
-</div>
-<h1 class="text-3xl font-bold mb-6">📦 Order Detail</h1>
+<!-- HEADER -->
+<div class="px-16 mt-10 flex justify-between items-center">
 
-{% if order %}
-<div class="bg-white p-6 rounded-xl shadow max-w-xl">
+    <div>
+        <p class="text-xs text-gray-400 mb-2">
+            ACCOUNT > ORDER HISTORY > ORDER DETAIL
+        </p>
 
-    <!-- PRODUCT -->
-    <h2 class="text-xl font-semibold mb-2">
-        Product: {{ order.product.name }}
-    </h2>
+        <h1 class="text-4xl mb-2">#VR-{{ order_id }}</h1>
+        <p id="order-date" class="text-gray-500 text-sm"></p>
+    </div>
 
-    <p><strong>Category:</strong> {{ order.product.category }}</p>
+    <div class="flex gap-4">
+<button onclick="openReasonModal('return')"
+class="px-6 py-2 rounded-full bg-pink-100 text-pink-600 text-sm">
+Return Order
+</button>
 
-    <p><strong>Price:</strong> ₹{{ order.product.price }}</p>
-
-    <p><strong>Quantity:</strong> {{ order.quantity }}</p>
-
-    <p class="text-lg font-bold mt-2">
-        Total: ₹{{ order.total_price }}
-    </p>
-
-    <!-- STATUS -->
-    <p class="mt-2">
-        <strong>Status:</strong>
-        <span class="
-            px-3 py-1 rounded-full text-sm
-            {% if order.status == 'pending' %}bg-yellow-100 text-yellow-700
-            {% elif order.status == 'completed' %}bg-green-100 text-green-700
-            {% elif order.status == 'cancelled' %}bg-red-100 text-red-700
-            {% else %}bg-gray-100 text-gray-700{% endif %}
-        ">
-            {{ order.status }}
-        </span>
-    </p>
-
-    <!-- DATE -->
-    <p class="mt-2">
-        <strong>Order Date:</strong>
-        {{ order.created_at|date:"d M Y, h:i A" }}
-    </p>
-
-    <hr class="my-4">
-
-    <!-- DELIVERY -->
-    <h3 class="font-semibold text-lg mb-2">🚚 Delivery Info</h3>
-    <p class="text-gray-600">Expected Delivery: 3–5 days</p>
+          <button onclick="trackOrder()"
+    class="px-6 py-2 rounded-full text-white text-sm"
+    style="background:linear-gradient(135deg,#7a5c00,#c8a646)">
+        Track Order
+    </button>
+    </div>
 
 </div>
 
-{% else %}
+<!-- TRACK BAR -->
+<div class="px-16 mt-10">
+    <div class="bg-white rounded-[40px] p-8 flex justify-between items-center">
 
-<div class="bg-red-100 text-red-700 p-4 rounded">
-    Order not found ❌
+        <div class="flex items-center w-full justify-between">
+
+            <div class="text-center">
+                <div class="w-10 h-10 bg-[#7a5c00] text-white rounded-full flex items-center justify-center">✓</div>
+                <p class="text-xs mt-2">ORDER PLACED</p>
+            </div>
+
+            <div class="h-[2px] bg-[#7a5c00] flex-1 mx-4"></div>
+
+            <div class="text-center">
+                <div class="w-10 h-10 bg-[#7a5c00] text-white rounded-full flex items-center justify-center">↻</div>
+                <p class="text-xs mt-2">PROCESSING</p>
+            </div>
+
+            <div class="h-[2px] bg-[#c8a646] flex-1 mx-4"></div>
+
+            <div class="text-center">
+                <div class="w-12 h-12 bg-[#c8a646] text-white rounded-full flex items-center justify-center">🚚</div>
+                <p class="text-xs mt-2">SHIPPED</p>
+            </div>
+
+            <div class="h-[2px] bg-gray-200 flex-1 mx-4"></div>
+
+            <div class="text-center">
+                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">📦</div>
+                <p class="text-xs mt-2 text-gray-400">OUT FOR DELIVERY</p>
+            </div>
+
+            <div class="h-[2px] bg-gray-200 flex-1 mx-4"></div>
+
+            <div class="text-center">
+                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">📍</div>
+                <p class="text-xs mt-2 text-gray-400">DELIVERED</p>
+            </div>
+
+        </div>
+    </div>
 </div>
 
-{% endif %}
+<!-- MAIN -->
+<div class="px-16 mt-12 grid grid-cols-3 gap-10">
 
-<br>
+    <!-- LEFT -->
+    <div class="col-span-2 space-y-8">
 
-<a href="/orders/" class="text-blue-500 hover:underline">
-    ⬅ Back to Orders
-</a>
+        <h2 class="text-2xl">Ordered Items</h2>
 
+        <div id="order-items"></div>
+
+        <!-- ADDRESS + PAYMENT -->
+        <div class="grid grid-cols-2 gap-6">
+
+            <div class="bg-white rounded-[30px] p-6">
+                <h3 class="font-semibold mb-2">Shipping Address</h3>
+                <p id="order-address" class="text-sm text-gray-500"></p>
+            </div>
+
+            <div class="bg-white rounded-[30px] p-6">
+                <h3 class="font-semibold mb-2">Payment Method</h3>
+                <p id="order-payment" class="text-sm text-gray-500"></p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div>
+        <div class="bg-white rounded-[30px] p-8 shadow-sm">
+
+            <h3 class="text-xl mb-6">Order Summary</h3>
+
+            <div class="flex justify-between text-sm mb-2">
+                <span>Subtotal</span>
+                <span id="order-total"></span>
+            </div>
+
+            <div class="flex justify-between text-sm mb-2">
+                <span>Shipping</span>
+                <span class="text-[#7a5c00]">FREE</span>
+            </div>
+
+            <div class="flex justify-between text-sm mb-4">
+                <span>Tax</span>
+                <span>₹0</span>
+            </div>
+
+            <hr class="mb-4">
+
+            <div class="flex justify-between text-lg font-semibold">
+                <span>Total</span>
+                <span id="order-total-final" class="text-[#7a5c00]"></span>
+            </div>
+
+           <button onclick="trackDelivery()"
+class="w-full mt-6 py-3 rounded-full text-white"
+style="background:linear-gradient(135deg,#7a5c00,#c8a646)">
+TRACK DELIVERY
+</button>
+
+<button onclick="downloadInvoice()"
+class="w-full mt-3 py-3 rounded-full border text-sm">
+DOWNLOAD INVOICE
+</button>
+
+
+<button onclick="openReasonModal('cancel')"
+class="w-full mt-3 py-3 rounded-full text-red-500 text-sm border border-red-200">
+CANCEL ORDER
+</button>
+
+        </div>
+    </div>
+
+</div>
+<!-- 🔥 POPUP -->
+<div id="reasonModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+
+    <div class="bg-white rounded-2xl p-6 w-[400px]">
+
+        <h2 class="text-lg font-semibold mb-4">Select Reason</h2>
+
+        <div class="space-y-2 text-sm">
+
+            <label class="block">
+                <input type="radio" name="reason" value="Ordered by mistake"> Ordered by mistake
+            </label>
+
+            <label class="block">
+                <input type="radio" name="reason" value="Item arrived late"> Item arrived late
+            </label>
+
+            <label class="block">
+                <input type="radio" name="reason" value="Found cheaper elsewhere"> Found cheaper elsewhere
+            </label>
+
+            <label class="block">
+                <input type="radio" name="reason" value="Wrong item ordered"> Wrong item ordered
+            </label>
+
+            <label class="block">
+                <input type="radio" name="reason" value="Other"> Other
+            </label>
+
+        </div>
+
+        <!-- OTHER TEXT -->
+        <textarea id="otherReason"
+        class="w-full border rounded-lg p-2 mt-3 text-sm hidden"
+        placeholder="Write your reason..."></textarea>
+
+        <div class="flex justify-end gap-3 mt-4">
+
+            <button onclick="closeModal()"
+            class="px-4 py-2 text-sm border rounded">
+            Cancel
+            </button>
+
+            <button onclick="submitReason()"
+            class="px-4 py-2 text-sm text-white rounded"
+            style="background:#7a5c00">
+            Submit
+            </button>
+
+        </div>
+
+    </div>
+</div>
 </body>
 </html>

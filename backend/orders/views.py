@@ -58,33 +58,6 @@ def get_orders(request):
 
     return Response(data)
 
-@api_view(['GET'])
-def get_order_detail(request, order_id):
-
-    try:
-        order = Order.objects.get(id=order_id)
-
-        items = order.items.all()
-
-        item_data = []
-        for item in items:
-            item_data.append({
-                "name": item.product.name,
-                "image": item.product.image.url if item.product.image else "",
-                "quantity": item.quantity,
-                "price": item.price
-            })
-
-        return Response({
-            "id": order.id,
-            "status": order.status,
-            "total": order.total_price,
-            "address": order.address,
-            "items": item_data
-        })
-
-    except Order.DoesNotExist:
-        return Response({"error": "Order not found"}, status=404)
 
 # ✅ PLACE ORDER (FIXED PRO)
 @api_view(['POST'])
@@ -135,15 +108,17 @@ def cancel_order(request, order_id):
         user = get_user(request)
 
         order = Order.objects.get(id=order_id, user=user)
+
+        reason = request.data.get("reason", "")
+
         order.status = "cancelled"
+        order.cancel_reason = reason   # ✅ SAVE REASON
         order.save()
 
         return Response({"message": "Order cancelled"})
 
     except Order.DoesNotExist:
         return Response({"error": "Order not found"}, status=404)
-
-
 # ✅ CREATE PAYMENT
 @api_view(['POST'])
 def create_payment(request):
@@ -187,5 +162,53 @@ def verify_payment(request):
     else:
         return Response({"status": "failed"}, status=400)
     
+@api_view(['GET'])
+def get_order_detail(request, order_id):
+    try:
+        order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        return Response({"error": "Order not found"}, status=404)
 
-    
+    items_data = []
+
+    order_items = OrderItem.objects.filter(order=order)
+
+    for item in order_items:
+        items_data.append({
+            "id": item.id,
+            "product_id": item.product.id,
+            "product_name": item.product.name,
+            "product_image": item.product.image.url if item.product.image else "",
+            "quantity": item.quantity,
+            "price": item.price,
+        })
+
+    data = {
+        "id": order.id,
+        "total_price": order.total_price,
+        "status": order.status,
+        "created_at": order.created_at,
+        "address": order.address,
+        "payment_method": order.payment_method,
+        "items": items_data
+    }
+
+    return Response(data)
+
+@api_view(['POST'])
+def return_order(request, order_id):
+    try:
+        user = get_user(request)
+
+        order = Order.objects.get(id=order_id, user=user)
+
+        reason = request.data.get("reason", "")
+
+        order.status = "returned"
+        order.cancel_reason = reason
+        order.save()
+
+        return Response({"message": "Order return requested"})
+
+    except Order.DoesNotExist:
+        return Response({"error": "Order not found"}, status=404)

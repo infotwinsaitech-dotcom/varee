@@ -1,66 +1,248 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Login</title>
+<title>Login | Varee</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Inter&display=swap" rel="stylesheet">
 
 </head>
 
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-<div class="flex items-center gap-6">
+<body class="h-screen flex bg-[#f5f3ef] font-[Inter]">
 
-<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
-<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
-<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+<!-- LEFT -->
+<div class="w-1/2 hidden lg:block relative">
 
-<!-- ✅ NEW LINKS -->
-<a href="/profile/" class="text-sm">Profile</a>
-<a href="/terms/" class="text-sm">Terms</a>
-<a href="/shipping/" class="text-sm">Shipping</a>
-<a href="/sustainability/" class="text-sm">Sustainability</a>
+    <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e"
+    class="w-full h-full object-cover">
 
-<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+    <div class="absolute inset-0 bg-black/40 flex flex-col justify-between p-16 text-white">
+
+        <h1 class="text-xl tracking-[0.3em]">VAREE</h1>
+
+        <div>
+            <h1 class="text-6xl font-[Playfair_Display] leading-tight">
+                Welcome back <br> to elegance
+            </h1>
+
+            <p class="mt-4 text-sm opacity-90">
+                Access your curated experience
+            </p>
+        </div>
+
+        <p class="text-xs opacity-70">
+            VAREE EDITORIAL © 2024
+        </p>
+
+    </div>
+</div>
+
+<!-- RIGHT -->
+<div class="w-full lg:w-1/2 flex items-center justify-center">
+
+<div class="w-full max-w-md space-y-6 px-6">
+
+<h2 class="text-3xl font-[Playfair_Display] text-center text-[#7a5c00]">
+    Sign In
+</h2>
+
+<!-- TOGGLE -->
+<div class="flex bg-gray-200 rounded-full p-1">
+
+    <button id="emailTab"
+    onclick="switchTab('email')"
+    class="w-1/2 py-2 rounded-full text-sm bg-gradient-to-r from-[#7a5c00] to-[#d4af37] text-white">
+        EMAIL LOGIN
+    </button>
+
+    <button id="mobileTab"
+    onclick="switchTab('mobile')"
+    class="w-1/2 py-2 rounded-full text-sm text-gray-600">
+        MOBILE LOGIN
+    </button>
 
 </div>
-<div class="bg-white p-10 rounded-xl shadow w-full max-w-md">
 
-<h2 class="text-3xl font-bold text-center mb-6">Login</h2>
-
-<!-- ERROR -->
+<!-- MESSAGES -->
 {% if messages %}
-    {% for message in messages %}
-        <p class="text-red-500 text-center mb-4">{{ message }}</p>
-    {% endfor %}
+{% for message in messages %}
+<p class="text-red-500 text-center text-sm">{{ message }}</p>
+{% endfor %}
 {% endif %}
 
-<form method="POST" class="space-y-6">
+<form method="POST" class="space-y-5 mt-6">
 {% csrf_token %}
 
-<input name="username" placeholder="Username"
-class="w-full p-3 border rounded"/>
+<!-- EMAIL LOGIN -->
+<div id="emailLogin">
 
-<input name="password" type="password" placeholder="Password"
-class="w-full p-3 border rounded"/>
+    <input name="username" placeholder="Email Address"
+    class="w-full border-b border-gray-300 p-3 bg-transparent outline-none focus:border-[#7a5c00]">
 
-<button type="submit"
-class="w-full bg-blue-500 text-white py-3 rounded">
-Login
+    <input name="password" type="password" placeholder="Password"
+    class="w-full border-b border-gray-300 p-3 bg-transparent outline-none focus:border-[#7a5c00]">
+
+    <div class="text-right text-xs text-gray-500">
+        <a href="/forgot-password/">FORGOT PASSWORD?</a>
+    </div>
+
+</div>
+
+<!-- MOBILE LOGIN -->
+<div id="mobileLogin" class="hidden">
+
+    <!-- 10 BOX INPUT -->
+    <div class="flex justify-between gap-2">
+
+        <input maxlength="1" class="digit-box w-10 h-12 text-center border-b outline-none">
+        <input maxlength="1" class="digit-box w-10 h-12 text-center border-b outline-none">
+        <input maxlength="1" class="digit-box w-10 h-12 text-center border-b outline-none">
+        <input maxlength="1" class="digit-box w-10 h-12 text-center border-b outline-none">
+        <input maxlength="1" class="digit-box w-10 h-12 text-center border-b outline-none">
+        <input maxlength="1" class="digit-box w-10 h-12 text-center border-b outline-none">
+        <input maxlength="1" class="digit-box w-10 h-12 text-center border-b outline-none">
+        <input maxlength="1" class="digit-box w-10 h-12 text-center border-b outline-none">
+        <input maxlength="1" class="digit-box w-10 h-12 text-center border-b outline-none">
+        <input maxlength="1" class="digit-box w-10 h-12 text-center border-b outline-none">
+
+    </div>
+
+    <!-- HIDDEN FIELD -->
+    <input type="hidden" name="mobile" id="fullMobile">
+
+    <!-- BUTTON -->
+    <button type="button"
+    onclick="submitMobile()"
+    class="w-full mt-4 bg-gradient-to-r from-[#7a5c00] to-[#d4af37] text-white py-3 rounded-full tracking-widest">
+        SEND OTP
+    </button>
+
+</div>
+
+<!-- EMAIL BUTTON -->
+<button id="mainLoginBtn"
+class="w-full mt-4 bg-gradient-to-r from-[#7a5c00] to-[#d4af37] text-white py-3 rounded-full tracking-widest">
+    SIGN IN
 </button>
 
 </form>
 
-<div class="text-center mt-4">
-<a href="/forgot-password/" class="text-sm text-blue-500">Forgot Password?</a>
+<!-- DIVIDER -->
+<div class="flex items-center gap-4 mt-6">
+    <div class="flex-1 h-[1px] bg-gray-300"></div>
+    <span class="text-xs text-gray-400">OR</span>
+    <div class="flex-1 h-[1px] bg-gray-300"></div>
 </div>
 
+<!-- SOCIAL -->
+<div class="flex gap-4">
+    <button class="w-full border py-2 rounded-full text-sm">GOOGLE</button>
+    <button class="w-full border py-2 rounded-full text-sm">APPLE</button>
 </div>
+
+<p class="text-center text-sm mt-6 text-gray-500">
+    Don't have an account?
+    <a href="/register/" class="text-[#7a5c00] font-semibold">CREATE ACCOUNT</a>
+</p>
+
+</div>
+</div>
+
+<!-- SCRIPT -->
+<script>
+
+// TAB SWITCH (same as before)
+function switchTab(type) {
+
+    const emailLogin = document.getElementById("emailLogin");
+    const mobileLogin = document.getElementById("mobileLogin");
+    const mainBtn = document.getElementById("mainLoginBtn");
+
+    const emailTab = document.getElementById("emailTab");
+    const mobileTab = document.getElementById("mobileTab");
+
+    if (type === "email") {
+        emailLogin.classList.remove("hidden");
+        mobileLogin.classList.add("hidden");
+        mainBtn.classList.remove("hidden");
+
+        emailTab.classList.add("bg-gradient-to-r","from-[#7a5c00]","to-[#d4af37]","text-white");
+        mobileTab.classList.remove("bg-gradient-to-r","from-[#7a5c00]","to-[#d4af37]","text-white");
+    } else {
+        mobileLogin.classList.remove("hidden");
+        emailLogin.classList.add("hidden");
+        mainBtn.classList.add("hidden");
+
+        mobileTab.classList.add("bg-gradient-to-r","from-[#7a5c00]","to-[#d4af37]","text-white");
+        emailTab.classList.remove("bg-gradient-to-r","from-[#7a5c00]","to-[#d4af37]","text-white");
+    }
+}
+
+
+// 🔥 AUTO INPUT LOGIC
+const inputs = document.querySelectorAll(".digit-box");
+
+inputs.forEach((input, index) => {
+
+    // INPUT TYPE
+    input.addEventListener("input", (e) => {
+
+        // only numbers
+        input.value = input.value.replace(/[^0-9]/g, "");
+
+        if (input.value && index < inputs.length - 1) {
+            inputs[index + 1].focus();
+        }
+    });
+
+    // BACKSPACE HANDLE
+    input.addEventListener("keydown", (e) => {
+
+        if (e.key === "Backspace" && !input.value && index > 0) {
+            inputs[index - 1].focus();
+        }
+    });
+
+});
+
+
+// 🔥 PASTE FULL NUMBER SUPPORT
+inputs[0].addEventListener("paste", function(e) {
+
+    let pasteData = e.clipboardData.getData("text").replace(/\D/g, "");
+
+    if (pasteData.length === 10) {
+
+        inputs.forEach((input, i) => {
+            input.value = pasteData[i] || "";
+        });
+
+        e.preventDefault();
+    }
+});
+
+
+// SUBMIT MOBILE
+function submitMobile() {
+
+    let mobile = "";
+
+    inputs.forEach(input => mobile += input.value);
+
+    if (mobile.length !== 10) {
+        alert("Enter full 10 digit mobile number");
+        return;
+    }
+
+    document.getElementById("fullMobile").value = mobile;
+
+    // ✅ REDIRECT HERE
+    window.location.href = "/otp-login/?mobile=" + mobile;
+}
+
+</script>
 
 </body>
 </html>

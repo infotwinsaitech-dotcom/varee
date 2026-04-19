@@ -5,7 +5,8 @@ from .views import (
     place_order,
     cancel_order,
     verify_payment,
-    get_order_detail   # ✅ ADD THIS
+    get_order_detail,
+    return_order
 )
 
 urlpatterns = [
@@ -15,7 +16,7 @@ urlpatterns = [
     path('create-payment/', create_payment),
     path('verify-payment/', verify_payment),
 
-    # ✅ ORDER TRACKING
+    # ✅ FIXED
     path('<int:order_id>/', get_order_detail),
-    
+    path('return/<int:order_id>/', return_order),
 ]

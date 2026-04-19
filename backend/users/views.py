@@ -4,7 +4,6 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
-# ✅ DRF
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -74,18 +73,78 @@ def register_view(request):
 
 
 # ===============================
-# 👤 PROFILE API (🔥 NEW)
+# 👤 PROFILE GET
 # ===============================
+
 @api_view(['GET'])
 def user_profile(request):
 
-    if request.user.is_authenticated:
-        return Response({
-            "username": request.user.username,
-            "email": request.user.email
-        })
+    user = request.user
+
+    image_url = None
+
+    if hasattr(user, 'profile_image') and user.profile_image:
+        image_url = request.build_absolute_uri(user.profile_image.url)
 
     return Response({
-        "username": "Guest",
-        "email": ""
+        "username": user.username,
+        "email": user.email,
+        "profile_image": image_url
+    })
+
+
+@api_view(['POST'])
+def update_profile(request):
+
+    user = request.user
+
+    user.username = request.data.get("username")
+    user.email = request.data.get("email")
+
+    if request.FILES.get("image"):
+        user.profile_image = request.FILES.get("image")
+
+    user.save()
+
+    image_url = None
+    if user.profile_image:
+        image_url = request.build_absolute_uri(user.profile_image.url)
+
+    return Response({
+        "username": user.username,
+        "email": user.email,
+        "profile_image": image_url
+    })
+
+# ===============================
+# 👤 PROFILE UPDATE (🔥 FIXED)
+# ===============================
+
+@api_view(['POST'])
+def update_profile(request):
+
+    if not request.user.is_authenticated:
+        return Response({"error": "Not logged in"}, status=401)
+
+    user = request.user
+
+    user.username = request.data.get("username")
+    user.email = request.data.get("email")
+
+    if request.FILES.get("image"):
+        user.profile_image = request.FILES.get("image")
+
+    user.save()
+
+    image_url = None
+    if user.profile_image:
+        try:
+            image_url = user.profile_image.url
+        except:
+            image_url = None
+
+    return Response({
+        "username": user.username,
+        "email": user.email,
+        "profile_image": image_url
     })

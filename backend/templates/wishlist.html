@@ -1,53 +1,120 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Wishlist</title>
+    <title>Wishlist | Varee</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- ICONS -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 </head>
 
-<body class="p-10 bg-gray-100">
-<div class="flex items-center gap-6">
+<body class="bg-[#f5f3ef]">
 
-<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
-<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
-<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+<!-- 🔝 NAVBAR -->
+<div class="flex justify-between items-center px-10 py-6">
 
-<!-- ✅ NEW LINKS -->
-<a href="/profile/" class="text-sm">Profile</a>
-<a href="/terms/" class="text-sm">Terms</a>
-<a href="/shipping/" class="text-sm">Shipping</a>
-<a href="/sustainability/" class="text-sm">Sustainability</a>
+    <h1 class="text-2xl font-serif tracking-widest">VAREE</h1>
 
-<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+    <div class="flex gap-8 text-sm">
+        <a href="/home/">Home</a>
+        <a href="/products/">Collections</a>
+        <a href="/wishlist/" class="border-b">Wishlist</a>
+    </div>
+
+    <div class="flex gap-4">
+        <a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
+        <a href="/profile/"><span class="material-symbols-outlined">person</span></a>
+    </div>
 
 </div>
-<h1 class="text-2xl mb-6">❤️ Wishlist</h1>
 
-<div id="wishlist-items" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+<!-- 🔥 HEADER -->
+<div class="px-10 mt-10 mb-10">
 
+    <h2 class="text-5xl font-serif leading-tight">
+        Your Curated <br> <span class="italic">Sanctuary</span>
+    </h2>
+
+    <p class="text-gray-500 mt-4 max-w-md">
+        A private collection of your most loved pieces.
+    </p>
+
+</div>
+
+<!-- 🛍️ PRODUCTS -->
+<div id="wishlist-items" class="grid grid-cols-1 md:grid-cols-3 gap-10 px-10 pb-20"></div>
+
+<!-- 🔥 SUBSCRIBE SECTION -->
+<div class="mx-10 mb-16 bg-[#e9e5df] rounded-3xl p-10 flex justify-between items-center">
+
+    <div>
+        <h2 class="text-3xl font-serif mb-2">Join the Atelier</h2>
+        <p class="text-gray-600 text-sm">
+            Subscribe for exclusive drops.
+        </p>
+
+        <div class="mt-4 flex gap-3">
+            <input type="text" placeholder="Your email"
+                class="px-4 py-2 rounded-full border w-64">
+
+            <button class="bg-black text-white px-6 rounded-full">
+                Subscribe
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<!-- 🔻 FOOTER -->
+<div class="text-center text-xs text-gray-500 pb-6">
+    © 2026 Varee
+</div>
+
+<!-- 🔥 SCRIPT -->
 <script>
+
 async function loadWishlist() {
+
     const res = await fetch("/api/wishlist/");
     const data = await res.json();
 
     const container = document.getElementById("wishlist-items");
     container.innerHTML = "";
 
+    if (data.length === 0) {
+        container.innerHTML = `<p>No items in wishlist</p>`;
+        return;
+    }
+
     data.forEach(item => {
 
         container.innerHTML += `
-        <div class="bg-white p-4 rounded shadow">
+        <div class="bg-white p-4 rounded-3xl shadow-sm relative">
+
+            <!-- ❌ REMOVE BUTTON -->
+            <button onclick="removeFromWishlist(${item.product.id})"
+                class="absolute top-3 right-3 bg-gray-200 rounded-full w-7 h-7">
+                ✕
+            </button>
 
             <img src="http://127.0.0.1:8000${item.product.image}"
-                class="w-full h-40 object-cover mb-2"/>
+                class="w-full h-60 object-cover rounded-2xl mb-4"/>
 
-            <h3>${item.product.name}</h3>
-            <p>₹${item.product.price}</p>
+            <h3 class="font-semibold text-lg">${item.product.name}</h3>
 
-            <button onclick="removeFromWishlist(${item.product.id})"
-                class="mt-3 bg-red-500 text-white px-3 py-1 rounded">
-                Remove
-            </button>
+            <p class="text-sm text-gray-500">In Stock</p>
+
+            <div class="flex justify-between items-center mt-3">
+
+                <p class="font-semibold">₹${item.product.price}</p>
+
+                <button onclick="addToCart(${item.product.id})"
+                    class="bg-yellow-600 text-white px-4 py-2 rounded-full text-sm">
+                    Add to Bag
+                </button>
+
+            </div>
 
         </div>
         `;
@@ -63,7 +130,38 @@ async function removeFromWishlist(productId) {
     loadWishlist();
 }
 
+async function addToCart(productId) {
+
+    await fetch("/add-to-cart/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": getCookie("csrftoken")
+        },
+        body: `product_id=${productId}`
+    });
+
+    alert("Added to cart 🛒");
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 loadWishlist();
+
 </script>
+
 </body>
 </html>

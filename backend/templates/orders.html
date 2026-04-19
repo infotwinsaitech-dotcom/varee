@@ -3,163 +3,59 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>My Orders</title>
+<title>My Orders | Varee</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<script src="{% static 'js/script.js' %}"></script>
+
+<style>
+body { font-family: 'Inter', sans-serif; }
+h1 { font-family: 'Playfair Display', serif; }
+</style>
 
 </head>
 
-<body class="bg-[#f6f5f2] p-10">
-<div class="flex items-center gap-6">
+<body class="bg-[#f6f5f2] text-gray-800">
 
-<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
-<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
-<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
+<!-- NAVBAR -->
+<nav class="flex justify-between px-16 py-6">
+    <h1 class="text-2xl tracking-wide text-[#7a5c00]">VAREE</h1>
 
-<a href="/profile/" class="text-sm">Profile</a>
-<a href="/terms/" class="text-sm">Terms</a>
-<a href="/shipping/" class="text-sm">Shipping</a>
-<a href="/sustainability/" class="text-sm">Sustainability</a>
+    <div class="flex gap-10 text-gray-500 text-sm">
+        <a href="#">Collections</a>
+        <a href="#">Lookbook</a>
+        <a href="#">Boutiques</a>
+        <a href="#">Journal</a>
+    </div>
 
-<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
+    <div class="flex gap-4 text-xl">
+        🛍️ 👤
+    </div>
+</nav>
 
+<!-- TITLE -->
+<div class="px-16 mt-10">
+    <h1 class="text-5xl mb-3">My Orders</h1>
+    <p class="text-gray-500">
+        Review your curated acquisitions and track their journey to your doorstep.
+    </p>
 </div>
 
-<h1 class="text-4xl mb-10">📦 My Orders</h1>
+<!-- ORDERS -->
+<div id="orders-container" class="px-16 mt-10 space-y-10"></div>
 
-<div id="orders-container" class="space-y-6"></div>
+<!-- RECOMMENDED -->
+<div class="px-16 mt-20">
+    <h2 class="text-2xl mb-8 italic">Recommended for your Atelier</h2>
+
+    <div id="recommended" class="grid grid-cols-3 gap-10"></div>
+</div>
 
 <script>
-
-// ✅ CANCEL ORDER
-async function cancelOrder(id) {
-    try {
-        const res = await fetch(`/api/orders/cancel/${id}/`, {
-            method: "POST",
-            credentials: "include"   // ✅ FIX
-        });
-
-        if (!res.ok) {
-            alert("Cancel failed ❌");
-            return;
-        }
-
-        alert("Order cancelled ✅");
-        loadOrders();
-
-    } catch (err) {
-        console.error(err);
-        alert("Error ❌");
-    }
-}
-
-// ✅ LOAD ORDERS
-async function loadOrders() {
-    try {
-        const res = await fetch("/api/orders/", {
-            credentials: "include"   // ✅ FIX (MOST IMPORTANT)
-        });
-
-        if (!res.ok) {
-            throw new Error("Not authorized");
-        }
-
-        const orders = await res.json();
-        const container = document.getElementById("orders-container");
-
-        if (!orders.length) {
-            container.innerHTML = "<p>No orders yet 😔</p>";
-            return;
-        }
-
-        container.innerHTML = "";
-
-        orders.forEach(order => {
-
-            let itemsHTML = "";
-
-            order.items.forEach(item => {
-                itemsHTML += `
-                <div class="flex gap-4 items-center border-b pb-3">
-                    <img src="http://127.0.0.1:8000${item.product_image}"
-                         class="w-16 h-16 rounded object-cover"/>
-
-                    <div class="flex-1">
-                        <p class="font-semibold">${item.product_name}</p>
-                        <p class="text-sm text-gray-500">Qty: ${item.quantity}</p>
-                    </div>
-
-                    <p class="font-semibold">₹${item.price}</p>
-                </div>
-                `;
-            });
-
-            container.innerHTML += `
-            <div class="bg-white p-6 rounded-xl shadow">
-
-                <div class="flex justify-between mb-4">
-                    <div>
-                        <p class="text-sm text-gray-500">Order ID</p>
-                        <p class="font-semibold">#${order.id}</p>
-                    </div>
-
-                    <div class="text-right">
-                        <p class="text-sm text-gray-500">Status</p>
-                        <p class="font-semibold ${
-                            order.status === "Pending" ? "text-yellow-600" :
-                            order.status === "Delivered" ? "text-green-600" :
-                            order.status === "Cancelled" ? "text-red-500" :
-                            "text-gray-600"
-                        }">
-                            ${order.status}
-                        </p>
-                    </div>
-                </div>
-
-                <p class="text-sm text-gray-500 mb-3">
-                    ${new Date(order.created_at).toLocaleString()}
-                </p>
-
-                <div class="space-y-4">
-                    ${itemsHTML}
-                </div>
-
-                <div class="flex justify-between mt-6 border-t pt-4">
-                    <p class="text-lg font-semibold">Total</p>
-                    <p class="text-lg font-bold text-[#735c00]">
-                        ₹${order.total_price}
-                    </p>
-                </div>
-
-                ${order.status === "Pending" ? `
-                <div class="mt-4 flex gap-4 items-center">
-                    <button onclick="cancelOrder(${order.id})"
-                        class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                        Cancel Order
-                    </button>
-
-                    <a href="/order-tracking/${order.id}/"
-                        class="text-blue-500 text-sm underline">
-                        Track Order
-                    </a>
-                </div>
-                ` : ""}
-
-            </div>
-            `;
-        });
-
-    } catch (err) {
-        console.error(err);
-        document.getElementById("orders-container").innerHTML =
-            "<p class='text-red-500'>Error loading orders ❌</p>";
-    }
-}
-
-// 🚀 INIT
-loadOrders();
-
+window.addEventListener("DOMContentLoaded", () => {
+    loadOrders();
+    loadRecommended();
+});
 </script>
 
 </body>

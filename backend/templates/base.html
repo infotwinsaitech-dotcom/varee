@@ -7,53 +7,52 @@
 
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Inter&display=swap" rel="stylesheet">
 
 <title>{% block title %}Varee{% endblock %}</title>
 </head>
 
-<body class="bg-background text-on-surface">
+<body class="bg-[#f8f6f2] text-gray-800">
 
-<!-- ✅ NAVBAR (COMMON) -->
-<nav class="bg-[#faf9f6]/70 backdrop-blur-xl sticky top-0 z-50">
-<div class="flex justify-between items-center w-full px-8 py-6 max-w-[1440px] mx-auto">
+<!-- 🔥 NAVBAR -->
+<nav class="flex justify-between items-center px-10 py-6 bg-white shadow-sm">
 
 <div class="text-2xl font-serif">Varee</div>
 
-<div class="flex items-center gap-6">
-
+<div class="flex gap-6 text-sm">
 <a href="/home/">Home</a>
-<a href="/profile/">Profile</a>
+<a href="/products/">Shop</a>
 <a href="/wishlist/">Wishlist</a>
 <a href="/orders/">Orders</a>
-
-<a href="/terms/">Terms</a>
-<a href="/shipping/">Shipping</a>
-<a href="/sustainability/">Sustainability</a>
+<a href="/profile/">Profile</a>
+<a href="/user-dashboard/">Dashboard</a>
 
 </div>
 
+<div class="flex gap-4">
+<a href="/cart/">🛒</a>
+<a href="/wishlist/">Wishlist</a>
+<a href="/logout/">Logout</a>
 </div>
+
 </nav>
 
-<!-- ✅ MAIN CONTENT -->
-<div class="px-6 py-10">
-{% block content %}
-{% endblock %}
+<!-- CONTENT -->
+<div class="max-w-[1300px] mx-auto">
+{% block content %}{% endblock %}
 </div>
 
-<!-- ✅ FOOTER -->
-<footer class="bg-gray-100 text-center py-10 mt-10">
-
+<!-- FOOTER -->
+<footer class="bg-white mt-20 py-10 text-center text-sm">
 <p>© 2026 Varee</p>
-
-<div class="mt-4 flex justify-center gap-6 text-sm">
-<a href="/profile/">Profile</a>
+<div class="flex justify-center gap-6 mt-3">
+<a href="/privacy/">Privacy</a>
 <a href="/terms/">Terms</a>
-<a href="/shipping/">Shipping</a>
-<a href="/sustainability/">Sustainability</a>
+<a href="/contact/">Contact</a>
 </div>
-
 </footer>
+
+<script src="{% static 'js/script.js' %}"></script>
 
 </body>
 </html>

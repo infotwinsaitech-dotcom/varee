@@ -2,193 +2,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="{% static 'js/script.js' %}"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Detail</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+<title>Product</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Inter&display=swap" rel="stylesheet">
+
+<script src="{% static 'js/script.js' %}"></script>
+
+<style>
+body {
+    font-family: 'Inter', sans-serif;
+}
+h1 {
+    font-family: 'Playfair Display', serif;
+}
+</style>
+
 </head>
 
-<body class="bg-[#f5f3ef] text-gray-800">
+<body class="bg-[#f6f4ef] text-gray-800">
 
 <!-- NAVBAR -->
-<header class="flex justify-between items-center px-10 py-6">
+<header class="flex justify-between items-center px-12 py-6">
+
     <h1 class="text-2xl font-semibold">Varee</h1>
 
-    <nav class="space-x-10 text-gray-600">
-        <a href="/home/">Home</a>
-        <div class="flex items-center gap-6">
-
-<a href="/cart/"><span class="material-symbols-outlined">shopping_bag</span></a>
-<a href="/orders/"><span class="material-symbols-outlined">receipt_long</span></a>
-<a href="/wishlist/"><span class="material-symbols-outlined">favorite</span></a>
-
-<!-- ✅ NEW LINKS -->
-<a href="/profile/" class="text-sm">Profile</a>
-<a href="/terms/" class="text-sm">Terms</a>
-<a href="/shipping/" class="text-sm">Shipping</a>
-<a href="/sustainability/" class="text-sm">Sustainability</a>
-
-<a href="/logout/"><span class="material-symbols-outlined">logout</span></a>
-
-</div>
+    <nav class="flex gap-10 text-sm text-gray-600">
+        <a href="#">Collections</a>
+        <a href="#">New Arrivals</a>
+        <a href="#">Lookbook</a>
+        <a href="#">Our Story</a>
     </nav>
 
-    <div>🛍️</div>
+    <div class="flex gap-5 text-xl">
+        ❤️ 🛍️
+    </div>
+
 </header>
 
 <!-- MAIN -->
-<div class="max-w-7xl mx-auto px-10 py-10">
+<div class="max-w-7xl mx-auto px-12 py-10 grid grid-cols-1 lg:grid-cols-2 gap-16">
 
-    <div class="grid lg:grid-cols-2 gap-16">
+    <!-- LEFT -->
+    <div>
+        <img id="product-img"
+        class="w-full h-[650px] object-cover rounded-3xl shadow-lg">
 
-        <!-- LEFT IMAGE -->
-        <div>
-            <img id="product-img"
-                class="w-full rounded-3xl shadow-lg object-cover h-[600px]">
-        </div>
-
-        <!-- RIGHT CONTENT -->
-        <div>
-
-            <p class="text-sm text-gray-500 mb-2">NEW ARRIVAL</p>
-
-            <h1 id="product-name"
-                class="text-5xl font-semibold leading-tight mb-4"></h1>
-
-            <p id="product-category" class="text-gray-500 mb-2"></p>
-
-            <p id="product-price"
-                class="text-2xl mb-6"></p>
-
-            <p id="product-desc"
-                class="text-gray-600 leading-relaxed mb-10"></p>
-
-            <!-- BUTTONS -->
-            <div class="flex flex-col gap-4 mb-10">
-
-                <button onclick="addToCart(getProductId())"
-                    class="bg-pink-200 py-4 rounded-full text-lg font-medium hover:opacity-90">
-                    Add to Cart
-                </button>
-
-                <button
-                    class="border py-4 rounded-full text-lg hover:bg-gray-100">
-                    Buy Now
-                </button>
-
-            </div>
-
+        <!-- THUMBNAILS -->
+        <div class="flex gap-4 mt-6">
+            <div class="w-20 h-20 bg-black rounded-xl flex items-center justify-center text-white">1</div>
+            <div class="w-20 h-20 bg-gray-200 rounded-xl"></div>
+            <div class="w-20 h-20 bg-gray-200 rounded-xl"></div>
+            <div class="w-20 h-20 bg-gray-200 rounded-xl"></div>
         </div>
     </div>
 
-    <!-- RELATED -->
-    <div class="mt-20">
+    <!-- RIGHT -->
+    <div>
 
-        <h2 class="text-2xl font-semibold mb-6">You May Also Like</h2>
+        <p class="text-xs text-gray-500 tracking-widest mb-2">NEW ARRIVAL</p>
 
-        <div id="related-products"
-            class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <h1 id="product-name"
+        class="text-5xl leading-tight mb-4"></h1>
+
+        <!-- ⭐ RATING -->
+        <div class="flex items-center gap-2 mb-4">
+            <div class="text-yellow-500 text-lg">★★★★★</div>
+            <span class="text-sm text-gray-500">12 Reviews</span>
+        </div>
+
+        <p id="product-price"
+        class="text-2xl mb-6"></p>
+
+        <p id="product-desc"
+        class="text-gray-600 leading-relaxed mb-10 max-w-md"></p>
+
+        <!-- BUTTONS -->
+        <button onclick="addToCart()"
+        class="w-full bg-[#e7a9b2] py-4 rounded-full mb-4 text-lg">
+        Add to Cart
+        </button>
+
+        <button onclick="buyNow()"
+        class="w-full border py-4 rounded-full text-lg">
+        Buy Now
+        </button>
+
+        <!-- ACCORDION -->
+        <div class="mt-10 space-y-4">
+
+            <details class="border-t pt-4">
+                <summary class="cursor-pointer font-medium">Material & Care</summary>
+                <p class="text-sm text-gray-500 mt-2">
+                    Premium silk fabric, dry clean only.
+                </p>
+            </details>
+
+            <details class="border-t pt-4">
+                <summary class="cursor-pointer font-medium">Shipping & Returns</summary>
+                <p class="text-sm text-gray-500 mt-2">
+                    Free shipping. 7-day return policy.
+                </p>
+            </details>
+
+        </div>
+
+        <!-- SPEC -->
+        <div class="bg-gray-100 rounded-2xl p-6 mt-10 text-sm">
+            <p><b>Composition:</b> Silk 100%</p>
+            <p><b>Fit:</b> Regular</p>
+            <p><b>Origin:</b> Italy</p>
         </div>
 
     </div>
+</div>
+
+<!-- RELATED -->
+<div class="max-w-7xl mx-auto px-12 pb-20">
+
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl">You May Also Like</h2>
+        <span class="text-sm text-gray-500">View All Collections</span>
+    </div>
+
+    <div id="related-products"
+    class="grid grid-cols-2 md:grid-cols-4 gap-6"></div>
 
 </div>
 
-<!-- JS -->
+<!-- FOOTER -->
+<footer class="bg-[#f0ede8] py-12 px-12">
 
-<script>
-// ✅ GET PRODUCT ID
+    <div class="grid md:grid-cols-4 gap-10 text-sm">
 
-// ✅ LOAD PRODUCT DETAIL
-async function loadProductDetail() {
+        <div>
+            <h2 class="font-semibold mb-2">varee.</h2>
+            <p class="text-gray-500">
+                Crafted with intention in our digital atelier.
+            </p>
+        </div>
 
-    const parts = window.location.pathname.split("/");
-    const id = parts[parts.length - 2];
+        <div>
+            <h3 class="font-semibold mb-2">CUSTOMER CARE</h3>
+            <p>Shipping & Returns</p>
+            <p>Contact Us</p>
+            <p>Sustainability</p>
+        </div>
 
-    if (!id) return;
+        <div>
+            <h3 class="font-semibold mb-2">LEGAL</h3>
+            <p>Privacy Policy</p>
+            <p>Terms</p>
+        </div>
 
-    try {
-        const res = await fetch(`/api/products/${id}/`);
+        <div>
+            <h3 class="font-semibold mb-2">JOURNAL</h3>
+            <input type="text" placeholder="Email Address"
+            class="border px-3 py-2 w-full rounded">
+        </div>
 
-        if (!res.ok) {
-            console.log("API ERROR");
-            return;
-        }
+    </div>
 
-        const product = await res.json();
-
-        document.getElementById("product-name").innerText = product.name;
-        document.getElementById("product-price").innerText = "₹" + product.price;
-        document.getElementById("product-img").src = product.image;
-        document.getElementById("product-desc").innerText = product.description || "";
-        document.getElementById("product-category").innerText = product.category;
-
-    } catch (err) {
-        console.error(err);
-    }
-}
-
-function getProductId() {
-    const parts = window.location.pathname.split("/");
-    return parts[parts.length - 2];
-}
-
-window.onload = loadProductDetail;
-// ✅ ADD TO CART (NO DUPLICATE)
-async function addToCart(productId) {
-    try {
-        const res = await fetch("/api/cart/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                product_id: productId
-            })
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            alert("⚠️ Already added to cart");
-            return;
-        }
-
-        alert("✅ Added to cart");
-
-    } catch (err) {
-        console.error(err);
-        alert("Error ❌");
-    }
-}
-
-// ✅ LOAD RELATED PRODUCTS
-async function loadRelated() {
-    const res = await fetch("/api/products/");
-    const data = await res.json();
-
-    const container = document.getElementById("related-products");
-    container.innerHTML = "";
-
-    data.forEach(p => {
-        container.innerHTML += `
-            <div class="bg-white p-4 rounded-xl shadow">
-                <img src="${p.image}" class="h-40 w-full object-cover rounded mb-2">
-                <h3>${p.name}</h3>
-                <p class="text-gray-500">₹${p.price}</p>
-            </div>
-        `;
-    });
-}
-
-// 🚀 INIT
-window.onload = () => {
-    loadProductDetail();
-    loadRelated();
-};
-</script>
+</footer>
 
 </body>
 </html>

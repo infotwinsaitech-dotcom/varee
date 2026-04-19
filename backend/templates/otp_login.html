@@ -55,7 +55,7 @@
     OTP sent to your mobile number
 </p>
 
-<form method="POST" action="/verify-otp/" onsubmit="submitOTP()" class="space-y-6 mt-6">
+<form method="POST" action="/verify-login-otp/" onsubmit="submitOTP()" class="space-y-6 mt-6">
 {% csrf_token %}
 
 <!-- OTP BOXES -->
@@ -72,11 +72,11 @@
 
 <input type="hidden" name="otp" id="fullOtp">
 
+<!-- LOGIN BUTTON -->
 <button type="submit"
 class="w-full bg-gradient-to-r from-[#7a5c00] to-[#d4af37] text-white py-3 rounded-full tracking-widest">
-RESET PASSWORD
+LOGIN
 </button>
-
 
 <!-- RESEND -->
 <button type="button"
