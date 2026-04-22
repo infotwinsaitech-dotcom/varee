@@ -90,7 +90,10 @@ DATABASES = {
        'postgresql://varee_db_user:YHU6so7f3KhSxxDZuCrduok1JkKsUz3s@dpg-d7ifjcnlk1mc739sf530-a.oregon-postgres.render.com/varee_db'
     )
 }
-
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'kavathiyapc1@gmail.com'
 EMAIL_HOST_PASSWORD = 'wjpg ikfv splv yfxc'
 

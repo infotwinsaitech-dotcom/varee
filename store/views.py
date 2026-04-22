@@ -44,10 +44,14 @@ def register(request):
 # ===============================
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
+        email = request.POST.get('username')   # form से email आ रहा है
         password = request.POST.get('password')
 
-        user = authenticate(request, username=username, password=password)
+        try:
+            user_obj = User.objects.get(email=email)
+            user = authenticate(request, username=user_obj.username, password=password)
+        except User.DoesNotExist:
+            user = None
 
         if user:
             login(request, user)
@@ -55,7 +59,7 @@ def login_view(request):
         else:
             messages.error(request, "Invalid credentials")
 
-    return render(request, 'login.html')
+    return render(request, 'otp_login.html')
 
 # ===============================
 # HOME
