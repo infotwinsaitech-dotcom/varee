@@ -390,32 +390,20 @@ def otp_login(request):
     return render(request, "otp_login.html")
 def verify_otp(request):
 
-    # ❌ direct open block
     if not request.session.get("otp"):
         return redirect('/login/')
 
     if request.method == "POST":
-
         user_otp = request.POST.get("otp")
         session_otp = request.session.get("otp")
-        mobile = request.session.get("auth_user")
 
         if user_otp == session_otp:
-
-            user, created = User.objects.get_or_create(username=mobile)
-
-            login(request, user)
-
-            # session साफ
-            request.session.flush()
-
             return redirect("/home/")
-
         else:
             messages.error(request, "Invalid OTP")
             return redirect("/verify-otp/")
 
-    return render(request, "otp.html")   # ⚠️ IMPORTANT (otp_verify नहीं)
+    return render(request, "otp.html")   # ⚠️ यही रखना
 # ===============================
 # OTP SEND (LOGIN / FORGOT)
 # ===============================
