@@ -5,6 +5,9 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from backend.cart.models import CartItem 
+
+import random
+
 import requests
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -397,3 +400,35 @@ def product_list(request):
         'products': products
     })
 
+def send_otp(request, mobile):
+
+    otp = random.randint(1000, 9999)
+
+    # session में save
+    request.session['otp'] = str(otp)
+
+    # 👇 console में दिखेगा
+    print("🔥 OTP:", otp)
+
+    return otp
+def otp_login(request):
+    if request.method == "POST":
+        mobile = request.POST.get("mobile")
+
+        send_otp(request, mobile)   # ✅ यहाँ
+
+        return render(request, "otp_verify.html")
+
+    return render(request, "otp_login.html")
+
+def verify_otp(request):
+    if request.method == "POST":
+
+        user_otp = request.POST.get("otp")
+
+        if user_otp == request.session.get("otp"):
+            return redirect("/home/")
+        else:
+            return HttpResponse("Invalid OTP")
+
+    return HttpResponse("Error")

@@ -47,15 +47,13 @@
 <h2 class="text-3xl font-[Playfair_Display] text-center text-[#7a5c00]">
     Verify OTP
 </h2>
-<p class="text-center text-sm text-gray-400">
-    OTP sent to {{ mobile }}
-</p>
 
 <p class="text-center text-sm text-gray-400">
-    OTP sent to your mobile number
+    Enter OTP from console
 </p>
 
-<form method="POST" action="/verify-login-otp/" onsubmit="submitOTP()" class="space-y-6 mt-6">
+<!-- ✅ IMPORTANT: correct action -->
+<form method="POST" action="/verify-otp/" onsubmit="submitOTP()" class="space-y-6 mt-6">
 {% csrf_token %}
 
 <!-- OTP BOXES -->
@@ -65,24 +63,16 @@
     <input maxlength="1" class="otp-box w-12 h-14 text-center border-b outline-none">
     <input maxlength="1" class="otp-box w-12 h-14 text-center border-b outline-none">
     <input maxlength="1" class="otp-box w-12 h-14 text-center border-b outline-none">
-    <input maxlength="1" class="otp-box w-12 h-14 text-center border-b outline-none">
-    <input maxlength="1" class="otp-box w-12 h-14 text-center border-b outline-none">
 
 </div>
 
+<!-- ✅ hidden input (important) -->
 <input type="hidden" name="otp" id="fullOtp">
 
 <!-- LOGIN BUTTON -->
 <button type="submit"
 class="w-full bg-gradient-to-r from-[#7a5c00] to-[#d4af37] text-white py-3 rounded-full tracking-widest">
-LOGIN
-</button>
-
-<!-- RESEND -->
-<button type="button"
-onclick="resendOTP()"
-class="w-full border py-3 rounded-full text-sm">
-    RESEND OTP
+VERIFY OTP
 </button>
 
 </form>
@@ -92,9 +82,10 @@ class="w-full border py-3 rounded-full text-sm">
 
 <script>
 
-// AUTO MOVE
+// OTP inputs
 const otpInputs = document.querySelectorAll(".otp-box");
 
+// auto move
 otpInputs.forEach((input, index) => {
 
     input.addEventListener("input", () => {
@@ -113,19 +104,13 @@ otpInputs.forEach((input, index) => {
 
 });
 
-// SUBMIT OTP
-
+// submit OTP combine
 function submitOTP() {
 
     let otp = "";
     otpInputs.forEach(i => otp += i.value);
 
     document.getElementById("fullOtp").value = otp;
-}
-
-// RESEND OTP
-function resendOTP() {
-    alert("OTP resent");
 }
 
 </script>

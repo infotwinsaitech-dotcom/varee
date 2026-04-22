@@ -91,7 +91,8 @@ DATABASES = {
     )
 }
 
-
+EMAIL_HOST_USER = 'kavathiyapc1@gmail.com'
+EMAIL_HOST_PASSWORD = 'wjpg ikfv splv yfxc'
 
 # ========================
 # STATIC FILES

@@ -47,5 +47,6 @@ urlpatterns = [
 
     path('success/', views.success_page, name='success'),
     path('products/', views.product_list, name='products'),
+    path('verify-otp/', views.verify_otp),
 
 ]
