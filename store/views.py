@@ -401,7 +401,7 @@ def otp_login(request):
 
         send_otp(request, mobile)   # ✅ यहाँ
 
-        return render(request, "otp_verify.html")
+        return render(request, "otp.html")
 
     return render(request, "otp_login.html")
 
