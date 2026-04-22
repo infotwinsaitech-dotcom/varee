@@ -33,18 +33,18 @@ def register(request):
             return redirect('register')
 
         user = User.objects.create_user(username=username, email=email, password=password)
-
         messages.success(request, "Account created! Please login")
         return redirect('login')
 
     return render(request, 'register.html')
+
 
 # ===============================
 # LOGIN
 # ===============================
 def login_view(request):
     if request.method == 'POST':
-        email = request.POST.get('username')   # form से email आ रहा है
+        email = request.POST.get('username')
         password = request.POST.get('password')
 
         try:
@@ -59,7 +59,7 @@ def login_view(request):
         else:
             messages.error(request, "Invalid credentials")
 
-    return render(request, 'otp_login.html')
+    return render(request, 'login.html')
 
 # ===============================
 # HOME
@@ -73,9 +73,10 @@ def home(request):
 # ===============================
 # LOGOUT
 # ===============================
-def logout_view(request):
-    logout(request)
-    return redirect('/login/')
+@login_required
+def home(request):
+    products = Product.objects.all()
+    return render(request, 'home.html', {'products': products})
 
 
 
@@ -97,7 +98,6 @@ def reset_password(request):
         user.set_password(password)
         user.save()
 
-        # session clear
         request.session.flush()
 
         messages.success(request, "Password updated successfully")
@@ -323,39 +323,19 @@ def verify_login_otp(request):
 
 
 def forgot_password(request):
-
     if request.method == "POST":
 
         email = request.POST.get("email")
-        mobile = request.POST.get("mobile")
 
-        # ===== EMAIL =====
-        if email:
+        if not User.objects.filter(email=email).exists():
+            messages.error(request, "Email not found")
+            return redirect('forgot_password')
 
-            if not User.objects.filter(email=email).exists():
-                messages.error(request, "Email not found")
-                return redirect('forgot_password')
+        send_otp(request, email)
 
-            otp = str(random.randint(100000, 999999))
+        request.session['reset_email'] = email
 
-            request.session['reset_email'] = email
-            request.session['otp'] = otp
-
-            print("🔥 EMAIL OTP:", otp)
-
-            return redirect('/verify-otp/')   # ✅ सही
-
-        # ===== MOBILE =====
-        if mobile:
-
-            otp = str(random.randint(100000, 999999))
-
-            request.session['reset_mobile'] = mobile
-            request.session['otp'] = otp
-
-            print("🔥 MOBILE OTP:", otp)
-
-            return redirect('/verify-otp/?mobile=' + mobile)   # ✅ FIX
+        return redirect('/verify-otp/')
 
     return render(request, 'forgot_password.html')
 @login_required
@@ -403,30 +383,31 @@ def otp_login(request):
     if request.method == "POST":
         mobile = request.POST.get("mobile")
 
-        send_otp(request, mobile)   # ✅ यहाँ
+        send_otp(request, mobile)
 
-        return render(request, "otp_login.html")
+        return redirect('/verify-otp/')
 
     return render(request, "otp_login.html")
-
 def verify_otp(request):
 
-    # ✅ GET → page open
-    if request.method == "GET":
-        return render(request, "otp_login.html")
+    # ❌ direct open block
+    if not request.session.get("otp"):
+        return redirect('/login/')
 
-    # ✅ POST → verify
     if request.method == "POST":
 
         user_otp = request.POST.get("otp")
         session_otp = request.session.get("otp")
-        mobile = request.session.get("mobile")
+        mobile = request.session.get("auth_user")
 
         if user_otp == session_otp:
 
-            # ✅ user create/login
             user, created = User.objects.get_or_create(username=mobile)
+
             login(request, user)
+
+            # session साफ
+            request.session.flush()
 
             return redirect("/home/")
 
@@ -434,4 +415,16 @@ def verify_otp(request):
             messages.error(request, "Invalid OTP")
             return redirect("/verify-otp/")
 
-    return HttpResponse("Error")
+    return render(request, "otp.html")   # ⚠️ IMPORTANT (otp_verify नहीं)
+# ===============================
+# OTP SEND (LOGIN / FORGOT)
+# ===============================
+def send_otp(request, mobile_or_email):
+    otp = str(random.randint(100000, 999999))
+
+    request.session['otp'] = otp
+    request.session['auth_user'] = mobile_or_email
+
+    print("🔥 OTP:", otp)  # console
+
+    return otp
