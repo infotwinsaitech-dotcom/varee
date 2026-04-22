@@ -316,23 +316,6 @@ def verify_login_otp(request):
 
     return redirect('/login/')
 
-def verify_otp(request):
-
-    if request.method == 'POST':
-
-        user_otp = request.POST.get('otp')
-        session_otp = request.session.get('otp')
-
-        if user_otp == session_otp:
-            return redirect('reset_password')
-
-        else:
-            messages.error(request, "Invalid OTP")
-            return redirect('verify_otp')
-
-    mobile = request.GET.get('mobile')
-
-    return render(request, 'otp.html', {'mobile': mobile})
 
 
 def forgot_password(request):
@@ -423,13 +406,28 @@ def otp_login(request):
     return render(request, "otp_login.html")
 
 def verify_otp(request):
+
+    # ✅ GET → page open
+    if request.method == "GET":
+        return render(request, "otp_verify.html")
+
+    # ✅ POST → verify
     if request.method == "POST":
 
         user_otp = request.POST.get("otp")
+        session_otp = request.session.get("otp")
+        mobile = request.session.get("mobile")
 
-        if user_otp == request.session.get("otp"):
+        if user_otp == session_otp:
+
+            # ✅ user create/login
+            user, created = User.objects.get_or_create(username=mobile)
+            login(request, user)
+
             return redirect("/home/")
+
         else:
-            return HttpResponse("Invalid OTP")
+            messages.error(request, "Invalid OTP")
+            return redirect("/verify-otp/")
 
     return HttpResponse("Error")
