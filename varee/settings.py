@@ -4,10 +4,11 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-temp-key'
-DEBUG = True
+SECRET_KEY = os.environ.get('SECRET_KEY', 'temp-key')
+
+DEBUG = False   # ✅ IMPORTANT
+
 ALLOWED_HOSTS = ['*']
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # ========================
 # APPS
@@ -24,9 +25,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'store',
     'accounts',
-  
 
-    # ✅ backend apps (ONLY ONCE)
     'backend.users',
     'backend.products',
     'backend.cart',
@@ -34,7 +33,6 @@ INSTALLED_APPS = [
     'backend.contact',
     'backend.dashboard',
     'backend.wishlist',
-
 ]
 
 # ========================
@@ -43,6 +41,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ ADD THIS
 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -66,9 +66,7 @@ ROOT_URLCONF = 'varee.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-
         'DIRS': [BASE_DIR / 'backend' / 'templates'],
-
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -83,49 +81,53 @@ TEMPLATES = [
 # ========================
 # DATABASE
 # ========================
-
-
 DATABASES = {
     'default': dj_database_url.parse(
-       'postgresql://varee_db_user:YHU6so7f3KhSxxDZuCrduok1JkKsUz3s@dpg-d7ifjcnlk1mc739sf530-a.oregon-postgres.render.com/varee_db'
+        'postgresql://varee_db_user:XXXX@dpg-d7ifjcnlk1mc739sf530-a.oregon-postgres.render.com/varee_db'
     )
 }
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'kavathiyapc1@gmail.com'
-EMAIL_HOST_PASSWORD = 'wjpg ikfv splv yfxc'
 
 # ========================
 # STATIC FILES
 # ========================
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
     BASE_DIR / 'backend' / 'static'
 ]
 
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/home/'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# ========================
+# MEDIA
+# ========================
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # ========================
-# DRF
+# AUTH
 # ========================
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-    ],
-}
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/home/'
+
+# ========================
+# EMAIL (SAFE VERSION)
+# ========================
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
+
+# ========================
+# CSRF
+# ========================
 CSRF_TRUSTED_ORIGINS = [
-    "http://127.0.0.1:8000",
+    "https://varee-d4cy.onrender.com",  # ✅ ADD THIS
 ]
+
 # ========================
 # OTHER
 # ========================
