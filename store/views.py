@@ -77,10 +77,12 @@ def home(request):
 # ===============================
 def send_otp(request, value):
     otp = str(random.randint(100000, 999999))
+
     request.session['otp'] = otp
     request.session['auth_user'] = value
 
     print("🔥 OTP:", otp)
+
     return otp
 
 
@@ -109,14 +111,15 @@ def forgot_password(request):
 # ===============================
 def verify_otp(request):
 
-    if not request.session.get("otp"):
+    otp_session = request.session.get("otp")
+
+    if not otp_session:
         return redirect('/login/')
 
     if request.method == "POST":
         user_otp = request.POST.get("otp")
-        session_otp = request.session.get("otp")
 
-        if user_otp == session_otp:
+        if user_otp == otp_session:
             return redirect("/home/")
         else:
             messages.error(request, "Invalid OTP")
