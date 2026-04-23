@@ -21,21 +21,8 @@ def register(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        print("DATA:", username, email, password)  # DEBUG
-
-        # ✅ empty check (VERY IMPORTANT)
         if not username or not email or not password:
-            messages.error(request, "All fields are required")
-            return redirect('register')
-
-        # ✅ username exists
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists")
-            return redirect('register')
-
-        # ✅ email exists (🔥 missing था तुम्हारे code में)
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "Email already exists")
+            messages.error(request, "All fields required")
             return redirect('register')
 
         try:
@@ -45,11 +32,10 @@ def register(request):
                 password=password
             )
         except Exception as e:
-            print("ERROR:", e)  # 🔥 ये log में दिखेगा
-            messages.error(request, "Something went wrong")
+            print("🔥 ERROR:", e)
+            messages.error(request, str(e))
             return redirect('register')
 
-        messages.success(request, "Account created! Please login")
         return redirect('login')
 
     return render(request, 'register.html')

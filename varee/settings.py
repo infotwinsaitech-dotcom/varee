@@ -1,14 +1,18 @@
 import os
 from pathlib import Path
 import dj_database_url
-
+from dotenv import load_dotenv
+load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ========================
+# SECURITY
+# ========================
 SECRET_KEY = os.environ.get('SECRET_KEY', 'temp-key')
 
-DEBUG = False   # ✅ IMPORTANT
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['varee-d4cy.onrender.com']
 
 # ========================
 # APPS
@@ -23,6 +27,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'corsheaders',
+
     'store',
     'accounts',
 
@@ -42,7 +47,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
 
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ ADD THIS
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -79,13 +84,24 @@ TEMPLATES = [
 ]
 
 # ========================
-# DATABASE
+# DATABASE (🔥 FIXED)
 # ========================
-DATABASES = {
-    'default': dj_database_url.parse(
-        'postgresql://varee_db_user:XXXX@dpg-d7ifjcnlk1mc739sf530-a.oregon-postgres.render.com/varee_db'
+
+if os.environ.get('DATABASE_URL'):
+    DATABASES = {
+    'default': dj_database_url.config(
+        conn_max_age=600,
+        ssl_require=True
     )
 }
+else:
+    # local fallback
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # ========================
 # STATIC FILES
@@ -100,7 +116,7 @@ STATICFILES_DIRS = [
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ========================
-# MEDIA
+# MEDIA FILES
 # ========================
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -112,7 +128,7 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/home/'
 
 # ========================
-# EMAIL (SAFE VERSION)
+# EMAIL (SAFE)
 # ========================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -125,14 +141,27 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
 # CSRF
 # ========================
 CSRF_TRUSTED_ORIGINS = [
-    "https://varee-d4cy.onrender.com",  # ✅ ADD THIS
+    "https://varee-d4cy.onrender.com",
 ]
+
+# ========================
+# REST FRAMEWORK
+# ========================
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+}
 
 # ========================
 # OTHER
 # ========================
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
+
 USE_I18N = True
 USE_TZ = True
 
