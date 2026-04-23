@@ -114,8 +114,6 @@ def forgot_password(request):
 
         email = request.POST.get("email")
 
-        print("EMAIL:", email)
-
         if not email:
             messages.error(request, "Email required")
             return redirect('forgot_password')
@@ -131,16 +129,19 @@ def forgot_password(request):
         request.session['otp'] = otp
         request.session['reset_email'] = email
 
-        print("🔥 OTP:", otp)
-
         # ✅ EMAIL SEND (IMPORTANT)
-        send_mail(
-            subject='Password Reset OTP',
-            message=f'Your OTP is: {otp}',
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[email],
-            fail_silently=False,
-        )
+        try:
+            send_mail(
+                subject='Password Reset OTP',
+                message=f'Your OTP is: {otp}',
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            print("EMAIL ERROR:", e)
+            messages.error(request, "Email sending failed")
+            return redirect('forgot_password')
 
         return redirect('/verify-otp/')
 
