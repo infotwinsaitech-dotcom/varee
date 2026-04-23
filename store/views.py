@@ -105,12 +105,16 @@ def send_otp(request, value):
 # ===============================
 # FORGOT PASSWORD
 # ===============================
+from django.core.mail import send_mail
+from django.conf import settings
+import random
+
 def forgot_password(request):
     if request.method == "POST":
 
         email = request.POST.get("email")
 
-        print("EMAIL:", email)   # DEBUG
+        print("EMAIL:", email)
 
         if not email:
             messages.error(request, "Email required")
@@ -122,12 +126,21 @@ def forgot_password(request):
             messages.error(request, "Email not found")
             return redirect('forgot_password')
 
-        # OTP
+        # OTP generate
         otp = str(random.randint(100000, 999999))
         request.session['otp'] = otp
         request.session['reset_email'] = email
 
         print("🔥 OTP:", otp)
+
+        # ✅ EMAIL SEND (IMPORTANT)
+        send_mail(
+            subject='Password Reset OTP',
+            message=f'Your OTP is: {otp}',
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[email],
+            fail_silently=False,
+        )
 
         return redirect('/verify-otp/')
 
