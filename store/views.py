@@ -1,3 +1,4 @@
+import os
 import random
 import requests
 
@@ -124,18 +125,16 @@ def forgot_password(request):
             messages.error(request, "Email not found")
             return redirect('forgot_password')
 
-        # OTP generate
         otp = str(random.randint(100000, 999999))
         request.session['otp'] = otp
         request.session['reset_email'] = email
 
-        # ✅ EMAIL SEND (IMPORTANT)
         try:
             send_mail(
-                subject='Password Reset OTP',
-                message=f'Your OTP is: {otp}',
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[email],
+                "Your OTP Code",
+                f"Your OTP is {otp}",
+                os.environ.get("EMAIL_USER"),
+                [email],
                 fail_silently=False,
             )
         except Exception as e:
