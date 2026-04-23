@@ -49,17 +49,24 @@ def login_view(request):
         email = request.POST.get('username')
         password = request.POST.get('password')
 
+        if not email or not password:
+            messages.error(request, "All fields required")
+            return redirect('login')
+
         try:
             user_obj = User.objects.get(email=email)
-            user = authenticate(request, username=user_obj.username, password=password)
         except User.DoesNotExist:
-            user = None
+            messages.error(request, "Email not found")
+            return redirect('login')
 
-        if user:
+        user = authenticate(request, username=user_obj.username, password=password)
+
+        if user is not None:
             login(request, user)
             return redirect('/home/')
         else:
-            messages.error(request, "Invalid credentials")
+            messages.error(request, "Invalid password")
+            return redirect('login')
 
     return render(request, 'login.html')
 
