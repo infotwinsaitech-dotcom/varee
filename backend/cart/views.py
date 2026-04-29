@@ -3,20 +3,20 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from backend.products.models import Product
 from backend.cart.models import Cart
-# ✅ FIXED USER (SESSION BASED)
+
+# ===============================
+# USER (SESSION BASED)
+# ===============================
 def get_user(request):
     if request.user.is_authenticated:
         return request.user
 
-    # 🔥 session create
     if not request.session.session_key:
         request.session.create()
 
     session_key = request.session.session_key
-
     user, _ = User.objects.get_or_create(username=session_key)
     return user
-
 
 # ===============================
 # GET + ADD
@@ -25,8 +25,9 @@ def get_user(request):
 def cart_list(request):
     user = get_user(request)
 
+    # ✅ GET
     if request.method == 'GET':
-        items = CartItem.objects.filter(user=user)
+        items = Cart.objects.filter(user=user)
 
         data = []
         for item in items:
@@ -44,6 +45,7 @@ def cart_list(request):
 
         return Response(data)
 
+    # ✅ POST
     if request.method == 'POST':
         product_id = request.data.get("product_id")
 
@@ -55,16 +57,20 @@ def cart_list(request):
         except Product.DoesNotExist:
             return Response({"error": "Product not found"}, status=404)
 
-        cart_item, created = CartItem.objects.get_or_create(
+        item = Cart.objects.filter(user=user, product=product).first()
+
+        if item:
+            item.quantity += 1
+            item.save()
+            return Response({"message": "already_exists"})
+
+        Cart.objects.create(
             user=user,
-            product=product
+            product=product,
+            quantity=1
         )
 
-        if not created:
-            cart_item.quantity += 1
-            cart_item.save()
-
-        return Response({"message": "Added to cart"})
+        return Response({"message": "added"})
 
 
 # ===============================
@@ -73,8 +79,8 @@ def cart_list(request):
 @api_view(['GET', 'PATCH', 'DELETE'])
 def cart_detail(request, id):
     try:
-        item = CartItem.objects.get(id=id)
-    except CartItem.DoesNotExist:
+        item = Cart.objects.get(id=id)
+    except Cart.DoesNotExist:
         return Response({"error": "Item not found"}, status=404)
 
     if request.method == 'GET':

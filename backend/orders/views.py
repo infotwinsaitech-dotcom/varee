@@ -12,8 +12,9 @@ from .models import Order, OrderItem
 
 client = razorpay.Client(auth=("rzp_test_SctBLJdpZLfuV2", "s5imSJzeEbJAXBYjEK0ufmng"))
 
-
-# ✅ COMMON USER
+# ===============================
+# COMMON USER
+# ===============================
 def get_user(request):
     if request.user.is_authenticated:
         return request.user
@@ -21,15 +22,14 @@ def get_user(request):
     user, _ = User.objects.get_or_create(username="guest_user")
     return user
 
-
-# ✅ GET ORDERS
-
+# ===============================
+# GET ORDERS
+# ===============================
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])   # ✅ नीचे होना चाहिए
+@permission_classes([IsAuthenticated])
 def get_orders(request):
 
     user = request.user
-
     orders = Order.objects.filter(user=user).order_by('-id')
 
     data = []
@@ -58,8 +58,9 @@ def get_orders(request):
 
     return Response(data)
 
-
-# ✅ PLACE ORDER (FIXED PRO)
+# ===============================
+# PLACE ORDER
+# ===============================
 @api_view(['POST'])
 def place_order(request):
 
@@ -71,14 +72,15 @@ def place_order(request):
     address = request.data.get("address")
     payment_method = request.data.get("payment_method")
 
-    cart_items = CartItem.objects.filter(user=user)
+    # ✅ FIX
+    cart_items = Cart.objects.filter(user=user)
 
     if not cart_items.exists():
         return Response({"error": "Cart is empty"}, status=400)
 
     total = sum(item.product.price * item.quantity for item in cart_items)
 
-    # ✅ CREATE ORDER
+    # CREATE ORDER
     order = Order.objects.create(
         user=user,
         address=address,
@@ -86,7 +88,7 @@ def place_order(request):
         total_price=total
     )
 
-    # ✅ CREATE ORDER ITEMS
+    # CREATE ORDER ITEMS
     for item in cart_items:
         OrderItem.objects.create(
             order=order,
@@ -95,13 +97,14 @@ def place_order(request):
             price=item.product.price
         )
 
-    # 🧹 CLEAR CART
+    # CLEAR CART
     cart_items.delete()
 
     return Response({"message": "Order placed successfully", "order_id": order.id})
 
-
-# ✅ CANCEL ORDER
+# ===============================
+# CANCEL ORDER
+# ===============================
 @api_view(['POST'])
 def cancel_order(request, order_id):
     try:
@@ -112,19 +115,24 @@ def cancel_order(request, order_id):
         reason = request.data.get("reason", "")
 
         order.status = "cancelled"
-        order.cancel_reason = reason   # ✅ SAVE REASON
+        order.cancel_reason = reason
         order.save()
 
         return Response({"message": "Order cancelled"})
 
     except Order.DoesNotExist:
         return Response({"error": "Order not found"}, status=404)
-# ✅ CREATE PAYMENT
+
+# ===============================
+# CREATE PAYMENT
+# ===============================
 @api_view(['POST'])
 def create_payment(request):
 
     user = get_user(request)
-    cart_items = CartItem.objects.filter(user=user)
+
+    # ✅ FIX
+    cart_items = Cart.objects.filter(user=user)
 
     if not cart_items.exists():
         return Response({"error": "Cart is empty"}, status=400)
@@ -140,8 +148,9 @@ def create_payment(request):
 
     return Response(payment)
 
-
-# ✅ VERIFY PAYMENT
+# ===============================
+# VERIFY PAYMENT
+# ===============================
 @api_view(['POST'])
 def verify_payment(request):
 
@@ -161,7 +170,10 @@ def verify_payment(request):
         return Response({"status": "success"})
     else:
         return Response({"status": "failed"}, status=400)
-    
+
+# ===============================
+# ORDER DETAIL
+# ===============================
 @api_view(['GET'])
 def get_order_detail(request, order_id):
     try:
@@ -195,6 +207,9 @@ def get_order_detail(request, order_id):
 
     return Response(data)
 
+# ===============================
+# RETURN ORDER
+# ===============================
 @api_view(['POST'])
 def return_order(request, order_id):
     try:
