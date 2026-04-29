@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.auth.models import User, AnonymousUser
 
-from backend.cart.models import CartItem
+from backend.cart.models import Cart
 from .models import Order, OrderItem
 
 client = razorpay.Client(auth=("rzp_test_SctBLJdpZLfuV2", "s5imSJzeEbJAXBYjEK0ufmng"))
