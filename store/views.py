@@ -110,18 +110,16 @@ def send_otp(request, value):
 from django.core.mail import send_mail
 from django.conf import settings
 import random
+import threading
+
+def send_email_async(subject, message, from_email, recipient_list):
+    send_mail(subject, message, from_email, recipient_list, fail_silently=True)
 
 def forgot_password(request):
     if request.method == "POST":
-
         email = request.POST.get("email")
 
-        if not email:
-            messages.error(request, "Email required")
-            return redirect('forgot_password')
-        
         user = User.objects.filter(email=email).first()
-
         if not user:
             messages.error(request, "Email not found")
             return redirect('forgot_password')
@@ -129,23 +127,17 @@ def forgot_password(request):
         otp = str(random.randint(100000, 999999))
         request.session['otp'] = otp
         request.session['reset_email'] = email
-        # 👇 YAHAN DALO
-        print("EMAIL USER:", settings.EMAIL_HOST_USER)
-        print("EMAIL PASS:", settings.EMAIL_HOST_PASSWORD)
 
-        try:
-         send_mail(
-        "Your OTP Code",
-        f"Your OTP is {otp}",
-        settings.EMAIL_HOST_USER,
-        [email],
-        fail_silently=False,
-    )
-
-        except Exception as e:
-            print("EMAIL ERROR:", e)
-            messages.error(request, "Email sending failed")
-            return redirect('forgot_password')
+        # 🔥 EMAIL भेजना (background में)
+        threading.Thread(
+            target=send_email_async,
+            args=(
+                "Your OTP Code",
+                f"Your OTP is {otp}",
+                settings.EMAIL_HOST_USER,
+                [email],
+            ),
+        ).start()
 
         return redirect('/verify-otp/')
 
