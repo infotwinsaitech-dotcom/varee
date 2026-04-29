@@ -32,4 +32,5 @@ urlpatterns = [
     path('privacy/', views.privacy, name='privacy'),
 
     path('products/', views.product_list, name='products'),
+    path('add-to-cart/', views.add_to_cart, name='add_to_cart'),
 ]

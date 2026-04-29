@@ -63,9 +63,13 @@ View Collection
     <p class="text-gray-500 text-sm">{{ product.category }}</p>
     <p class="mt-2 font-semibold">₹{{ product.price }}</p>
 
+  <form method="POST" action="/add-to-cart/">
+    {% csrf_token %}
+    <input type="hidden" name="product_id" value="{{ product.id }}">
     <button class="w-full bg-black text-white py-2 rounded mt-2">
         Add to Cart
     </button>
+</form>
 
 </div>
 {% endfor %}

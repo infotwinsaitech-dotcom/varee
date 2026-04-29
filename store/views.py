@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from backend.cart.models import Cart
 
 from backend.products.models import Product
 from backend.orders.models import Order, OrderItem
@@ -303,3 +304,28 @@ def product_list(request):
     return render(request, 'products_listing_filter.html', {
         'products': products
     })
+@login_required
+def add_to_cart(request):
+    if request.method == "POST":
+        product_id = request.POST.get("product_id")
+
+        if not product_id:
+            return redirect('/home/')
+
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return redirect('/home/')
+
+        # अगर already cart में है तो duplicate ना बने
+        cart_item = Cart.objects.filter(user=request.user, product=product).first()
+
+        if not cart_item:
+            Cart.objects.create(
+                user=request.user,
+                product=product
+            )
+
+        return redirect('/cart/')
+
+    return redirect('/home/')
