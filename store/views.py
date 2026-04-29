@@ -1,3 +1,4 @@
+import email
 import os
 import random
 import requests
@@ -128,15 +129,19 @@ def forgot_password(request):
         otp = str(random.randint(100000, 999999))
         request.session['otp'] = otp
         request.session['reset_email'] = email
+        # 👇 YAHAN DALO
+        print("EMAIL USER:", settings.EMAIL_HOST_USER)
+        print("EMAIL PASS:", settings.EMAIL_HOST_PASSWORD)
 
         try:
-            send_mail(
-                "Your OTP Code",
-                f"Your OTP is {otp}",
-                settings.EMAIL_HOST_USER,
-                [email],
-                fail_silently=False,
-            )
+         send_mail(
+        "Your OTP Code",
+        f"Your OTP is {otp}",
+        settings.EMAIL_HOST_USER,
+        [email],
+        fail_silently=False,
+    )
+
         except Exception as e:
             print("EMAIL ERROR:", e)
             messages.error(request, "Email sending failed")
