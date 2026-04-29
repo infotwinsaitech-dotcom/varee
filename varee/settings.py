@@ -12,7 +12,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'temp-key')
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['varee-d4cy.onrender.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'varee-d4cy.onrender.com']
 
 # ========================
 # APPS
