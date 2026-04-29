@@ -119,25 +119,21 @@ def forgot_password(request):
             messages.error(request, "Email required")
             return redirect('forgot_password')
 
-        try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
+        user = User.objects.filter(email=email).first()
+
+        if not user:
             messages.error(request, "Email not found")
             return redirect('forgot_password')
 
-        # OTP generate
         otp = str(random.randint(100000, 999999))
         request.session['otp'] = otp
         request.session['reset_email'] = email
 
-        print("🔥 OTP:", otp)
-
-        # 🔥 EMAIL SEND
         try:
             send_mail(
                 "Your OTP Code",
                 f"Your OTP is {otp}",
-                settings.EMAIL_HOST_USER,   # ✅ FIXED
+                settings.EMAIL_HOST_USER,
                 [email],
                 fail_silently=False,
             )
