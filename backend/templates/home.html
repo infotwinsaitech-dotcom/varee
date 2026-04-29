@@ -48,8 +48,8 @@ View Collection
 {% for product in products %}
 <div class="bg-white p-4 rounded-2xl shadow relative">
 
-    <!-- ❤️ TOGGLE -->
-    <button 
+    <!-- ❤️ WISHLIST -->
+    <button
         data-product="{{ product.id }}"
         onclick="toggleWishlist({{ product.id }}, this)"
         class="absolute top-3 right-3 text-xl">
@@ -63,13 +63,11 @@ View Collection
     <p class="text-gray-500 text-sm">{{ product.category }}</p>
     <p class="mt-2 font-semibold">₹{{ product.price }}</p>
 
-  <form method="POST" action="/add-to-cart/">
-    {% csrf_token %}
-    <input type="hidden" name="product_id" value="{{ product.id }}">
-    <button class="w-full bg-black text-white py-2 rounded mt-2">
+    <!-- ✅ ADD TO CART BUTTON -->
+    <button onclick="addToCart({{ product.id }}, this)"
+    class="w-full bg-black text-white py-2 rounded mt-2">
         Add to Cart
     </button>
-</form>
 
 </div>
 {% endfor %}
@@ -80,6 +78,7 @@ View Collection
 <!-- SCRIPT -->
 <script>
 
+// CSRF
 function getCSRFToken() {
     return document.cookie
         .split('; ')
@@ -87,7 +86,72 @@ function getCSRFToken() {
         ?.split('=')[1];
 }
 
-// LOAD
+// =====================
+// ADD TO CART
+// =====================
+async function addToCart(productId, btn) {
+
+    // अगर पहले से added है
+    if (btn.innerText === "Already Added") {
+        showPopup("⚠️ Already in cart");
+        return;
+    }
+
+    const csrftoken = getCSRFToken();
+
+    try {
+        await fetch("/api/cart/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                quantity: 1
+            })
+        });
+
+        // ✅ UI update
+        btn.innerText = "Already Added";
+        btn.classList.remove("bg-black");
+        btn.classList.add("bg-green-600");
+
+        // ✅ popup
+        showPopup("✅ Product added to cart");
+
+    } catch (error) {
+        showPopup("❌ Error adding to cart");
+    }
+}
+
+// =====================
+// POPUP
+// =====================
+function showPopup(message) {
+
+    const popup = document.createElement("div");
+    popup.innerText = message;
+
+    popup.style.position = "fixed";
+    popup.style.top = "20px";
+    popup.style.right = "20px";
+    popup.style.background = "black";
+    popup.style.color = "white";
+    popup.style.padding = "12px 20px";
+    popup.style.borderRadius = "10px";
+    popup.style.zIndex = "9999";
+
+    document.body.appendChild(popup);
+
+    setTimeout(() => {
+        popup.remove();
+    }, 2000);
+}
+
+// =====================
+// WISHLIST (same as before)
+// =====================
 async function loadWishlist() {
 
     const res = await fetch("/api/wishlist/");
@@ -109,22 +173,17 @@ async function loadWishlist() {
     });
 }
 
-// TOGGLE
 async function toggleWishlist(productId, btn) {
 
     const csrftoken = getCSRFToken();
-
     const isAdded = btn.classList.contains("active");
 
     if (!isAdded) {
-
         await fetch(`/api/wishlist/add/${productId}/`, {
             method: "POST",
             headers: { "X-CSRFToken": csrftoken }
         });
-
     } else {
-
         await fetch(`/api/wishlist/remove/${productId}/`, {
             method: "POST",
             headers: { "X-CSRFToken": csrftoken }
