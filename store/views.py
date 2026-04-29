@@ -111,24 +111,56 @@ from django.core.mail import send_mail
 from django.conf import settings
 import random
 import threading
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
 
+
+# ===============================
+# ASYNC EMAIL FUNCTION (SAFE)
+# ===============================
 def send_email_async(subject, message, from_email, recipient_list):
-    send_mail(subject, message, from_email, recipient_list, fail_silently=True)
+    try:
+        send_mail(
+            subject,
+            message,
+            from_email,
+            recipient_list,
+            fail_silently=True  # ❗ crash नहीं करेगा
+        )
+    except Exception as e:
+        print("❌ EMAIL ERROR:", e)
 
+
+# ===============================
+# FORGOT PASSWORD (FINAL)
+# ===============================
 def forgot_password(request):
     if request.method == "POST":
+
         email = request.POST.get("email")
 
+        if not email:
+            messages.error(request, "Email required")
+            return redirect('forgot_password')
+
+        # ✅ FIX: MultipleObjectsReturned
         user = User.objects.filter(email=email).first()
+
         if not user:
             messages.error(request, "Email not found")
             return redirect('forgot_password')
 
+        # ✅ OTP generate
         otp = str(random.randint(100000, 999999))
+
         request.session['otp'] = otp
         request.session['reset_email'] = email
 
-        # 🔥 EMAIL भेजना (background में)
+        # 🔥 DEBUG (IMPORTANT)
+        print("🔥 OTP:", otp)
+
+        # ✅ EMAIL (background में)
         threading.Thread(
             target=send_email_async,
             args=(
