@@ -87,20 +87,14 @@ function getCSRFToken() {
 }
 
 // =====================
-// ADD TO CART
+// ADD TO CART (FIXED)
 // =====================
 async function addToCart(productId, btn) {
-
-    // अगर पहले से added है
-    if (btn.innerText === "Already Added") {
-        showPopup("⚠️ Already in cart");
-        return;
-    }
 
     const csrftoken = getCSRFToken();
 
     try {
-        await fetch("/api/cart/", {
+        const res = await fetch("/api/cart/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -112,15 +106,28 @@ async function addToCart(productId, btn) {
             })
         });
 
-        // ✅ UI update
-        btn.innerText = "Already Added";
-        btn.classList.remove("bg-black");
-        btn.classList.add("bg-green-600");
+        const data = await res.json();
 
-        // ✅ popup
-        showPopup("✅ Product added to cart");
+        console.log("API RESPONSE:", data);
+
+        // ✅ अगर already cart में है
+        if (data.message === "already_exists") {
+            showPopup("⚠️ Already in cart");
+            return;
+        }
+
+        // ✅ अगर successfully add हुआ
+        if (data.message === "added") {
+
+            btn.innerText = "Already Added";
+            btn.classList.remove("bg-black");
+            btn.classList.add("bg-green-600");
+
+            showPopup("✅ Product added to cart");
+        }
 
     } catch (error) {
+        console.log(error);
         showPopup("❌ Error adding to cart");
     }
 }
@@ -150,7 +157,7 @@ function showPopup(message) {
 }
 
 // =====================
-// WISHLIST (same as before)
+// WISHLIST (UNCHANGED)
 // =====================
 async function loadWishlist() {
 
@@ -197,5 +204,4 @@ async function toggleWishlist(productId, btn) {
 document.addEventListener("DOMContentLoaded", loadWishlist);
 
 </script>
-
 {% endblock %}
