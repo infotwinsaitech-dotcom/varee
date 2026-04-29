@@ -118,7 +118,7 @@ def forgot_password(request):
         if not email:
             messages.error(request, "Email required")
             return redirect('forgot_password')
-
+        
         user = User.objects.filter(email=email).first()
 
         if not user:
