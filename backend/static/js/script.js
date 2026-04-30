@@ -514,10 +514,10 @@ async function loadOrders() {
 
         const item = order.items[0];
 
-        const img = item.product_image
-            ? "http://127.0.0.1:8000" + item.product_image
-            : "https://via.placeholder.com/100";
-
+       
+const img = item.product_image 
+    ? item.product_image 
+    : "https://via.placeholder.com/100";
         let statusColor = "bg-gray-200 text-gray-700";
 
         if (order.status === "Delivered") {
@@ -636,9 +636,10 @@ async function loadOrderDetail() {
 
     order.items.forEach(item => {
 
-        const img = item.product_image
-            ? "http://127.0.0.1:8000" + item.product_image
-            : "https://via.placeholder.com/100";
+       
+const img = item.product_image 
+    ? item.product_image 
+    : "https://via.placeholder.com/100";
 
         container.innerHTML += `
         <div class="bg-white rounded-[30px] p-6 flex items-center gap-6 shadow-sm">
@@ -913,9 +914,10 @@ async function loadTracking() {
     // ======================
     const item = data.items[0];
 
-    const img = item.product_image
-        ? "http://127.0.0.1:8000" + item.product_image
-        : "https://via.placeholder.com/100";
+    
+const img = item.product_image 
+    ? item.product_image 
+    : "https://via.placeholder.com/100";
 
     document.getElementById("product-box").innerHTML = `
         <div class="flex gap-4 items-center">
@@ -937,81 +939,41 @@ async function loadTracking() {
 
 window.addEventListener("DOMContentLoaded", loadTracking);
 
-async function loadOrders() {
-
-    const res = await fetch("/api/orders/");
-    const data = await res.json();
-
-    const container = document.getElementById("orders-container");
-    container.innerHTML = "";
-
-    data.forEach(order => {
-
-        let itemsHTML = "";
-
-        order.items.forEach(item => {
-            itemsHTML += `
-                <div class="flex items-center gap-4 mb-3">
-                    <img src="${item.product_image}" 
-                         class="w-16 h-16 object-cover rounded">
-
-                    <div>
-                        <p class="font-semibold">${item.product_name}</p>
-                        <p class="text-sm text-gray-500">Qty: ${item.quantity}</p>
-                        <p class="text-sm">₹${item.price}</p>
-                    </div>
-                </div>
-            `;
-        });
-
-        container.innerHTML += `
-            <div class="bg-white p-6 rounded-2xl shadow">
-                <p class="text-sm text-gray-500 mb-2">
-                    Order #${order.id}
-                </p>
-
-                ${itemsHTML}
-
-                <p class="mt-3 font-semibold">Total: ₹${order.total_price}</p>
-                <p class="text-sm text-gray-500">${order.address}</p>
-            </div>
-        `;
-    });
-}
-
 async function placeOrder() {
 
-    const address = document.querySelector("input[name='address']").value;
-    const payment = document.getElementById("payment-method").value;
+    const address = document.querySelector("input[name='address']")?.value;
+    const payment = document.getElementById("payment-method")?.value;
 
-    if (!address) {
-        alert("Enter address");
+    if (!address || address.trim() === "") {
+        alert("❌ Enter address");
         return;
     }
 
     if (!payment) {
-        alert("Select payment method");
+        alert("❌ Select payment method");
         return;
     }
 
-    const res = await fetch("/api/orders/place/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            address: address,
-            payment_method: payment
-        })
-    });
+const res = await fetch("/api/orders/place/", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRFToken()
+    },
+    credentials: "include",   // ✅ MUST
+    body: JSON.stringify({
+        address: address,
+        payment_method: payment
+    })
+});
 
     const data = await res.json();
 
-    if (data.error) {
-        alert(data.error);
-    } else {
-        alert("Order placed successfully");
-        window.location.href = "/orders/";
+    if (!res.ok) {
+        alert(data.error || "Order failed");
+        return;
     }
-}
 
+    alert("✅ Order placed successfully");
+    window.location.href = "/orders/";
+}

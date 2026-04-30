@@ -62,6 +62,7 @@ def get_orders(request):
 # PLACE ORDER (🔥 FIXED)
 # ===============================
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def place_order(request):
 
     user = request.user

@@ -13,7 +13,7 @@ class Order(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    address = models.TextField(null=True, blank=True)
+    address = models.TextField()
     payment_method = models.CharField(max_length=50)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
 
