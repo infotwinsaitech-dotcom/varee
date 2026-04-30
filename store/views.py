@@ -329,3 +329,5 @@ def add_to_cart(request):
         return redirect('/cart/')
 
     return redirect('/home/')
+def checkout(request):
+    return render(request, 'checkout.html')
