@@ -59,7 +59,7 @@ def get_orders(request):
     return Response(data)
 
 # ===============================
-# PLACE ORDER
+# PLACE ORDER (🔥 FIXED)
 # ===============================
 @api_view(['POST'])
 def place_order(request):
@@ -72,7 +72,13 @@ def place_order(request):
     address = request.data.get("address")
     payment_method = request.data.get("payment_method")
 
-    # ✅ FIX
+    # ✅ VALIDATION
+    if not address:
+        return Response({"error": "Address is required"}, status=400)
+
+    if not payment_method:
+        return Response({"error": "Payment method required"}, status=400)
+
     cart_items = Cart.objects.filter(user=user)
 
     if not cart_items.exists():
@@ -80,7 +86,6 @@ def place_order(request):
 
     total = sum(item.product.price * item.quantity for item in cart_items)
 
-    # CREATE ORDER
     order = Order.objects.create(
         user=user,
         address=address,
@@ -88,7 +93,6 @@ def place_order(request):
         total_price=total
     )
 
-    # CREATE ORDER ITEMS
     for item in cart_items:
         OrderItem.objects.create(
             order=order,
@@ -97,7 +101,6 @@ def place_order(request):
             price=item.product.price
         )
 
-    # CLEAR CART
     cart_items.delete()
 
     return Response({"message": "Order placed successfully", "order_id": order.id})
