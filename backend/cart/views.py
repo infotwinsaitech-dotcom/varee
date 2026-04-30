@@ -4,9 +4,7 @@ from django.contrib.auth.models import User
 from backend.products.models import Product
 from backend.cart.models import Cart
 
-# ===============================
-# USER (SESSION BASED)
-# ===============================
+# USER
 def get_user(request):
     if request.user.is_authenticated:
         return request.user
@@ -18,14 +16,14 @@ def get_user(request):
     user, _ = User.objects.get_or_create(username=session_key)
     return user
 
-# ===============================
+# =====================
 # GET + ADD
-# ===============================
+# =====================
 @api_view(['GET', 'POST'])
 def cart_list(request):
     user = get_user(request)
 
-    # ✅ GET
+    # GET
     if request.method == 'GET':
         items = Cart.objects.filter(user=user)
 
@@ -38,14 +36,13 @@ def cart_list(request):
                     "name": item.product.name,
                     "price": item.product.price,
                     "image": item.product.image.url if item.product.image else "",
-                    "category": str(item.product.category)
                 },
-                "quantity": item.quantity
+                "quantity": item.quantity   # ✅ now exists
             })
 
         return Response(data)
 
-    # ✅ POST
+    # POST
     if request.method == 'POST':
         product_id = request.data.get("product_id")
 
