@@ -214,8 +214,10 @@ h1,h2 { font-family: 'Playfair Display', serif; }
 
     <!-- BUTTON FIXED -->
     <div>
-       <button onclick="placeOrder()" class="w-full bg-pink-400 text-white py-3 rounded">
-    PLACE ORDER →
+
+<button type="button" onclick="placeOrder()"
+class="w-full bg-pink-400 text-white py-3 rounded">
+PLACE ORDER →
 </button>
 
         <p class="text-xs text-gray-400 mt-4 text-center">
@@ -248,49 +250,46 @@ function selectPayment(method, el) {
 }
 async function placeOrder() {
 
-    const csrftoken = getCSRFToken();
+    const name = document.querySelector("input[name='name']").value;
+    const address = document.querySelector("input[name='address']").value;
+    const city = document.querySelector("input[name='city']").value;
+    const state = document.querySelector("input[name='state']").value;
+    const zip = document.querySelector("input[name='zip']").value;
+    const payment = document.getElementById("payment-method").value;
 
-    // 🔥 form से data लो
-    const name = document.querySelector('input[name="name"]').value;
-    const address = document.querySelector('input[name="address"]').value;
-    const city = document.querySelector('input[name="city"]').value;
-    const state = document.querySelector('input[name="state"]').value;
-    const zip = document.querySelector('input[name="zip"]').value;
+    // ✅ validation
+    if (!name || !address || !city || !state || !zip) {
+        alert("⚠️ Please fill all address fields");
+        return;
+    }
+
+    if (!payment) {
+        alert("⚠️ Select payment method");
+        return;
+    }
 
     const fullAddress = `${name}, ${address}, ${city}, ${state} - ${zip}`;
 
-    const payment_method = document.getElementById("payment-method").value || "COD";
+    const res = await fetch("/api/orders/place/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            address: fullAddress,
+            payment_method: payment
+        })
+    });
 
-    try {
-        const res = await fetch("/api/orders/place/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": csrftoken
-            },
-            body: JSON.stringify({
-                address: fullAddress,
-                payment_method: payment_method
-            })
-        });
+    const data = await res.json();
 
-        const data = await res.json();
-
-        if (res.ok) {
-            alert("✅ Order placed successfully");
-
-            // 👉 redirect
-            window.location.href = "/orders/";
-
-        } else {
-            alert(data.error || "❌ Order failed");
-        }
-
-    } catch (error) {
-        alert("❌ Server error");
+    if (data.error) {
+        alert(data.error);
+    } else {
+        alert("✅ Order placed successfully");
+        window.location.href = "/orders/";
     }
 }
-
 
 </script>
 </body>
