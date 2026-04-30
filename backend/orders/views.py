@@ -5,7 +5,7 @@ import razorpay
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.contrib.auth.models import User, AnonymousUser
+
 
 from backend.cart.models import Cart
 from .models import Order, OrderItem
@@ -29,7 +29,8 @@ def get_user(request):
 @permission_classes([IsAuthenticated])
 def get_orders(request):
 
-    user = request.user
+    user = get_user(request)
+
     orders = Order.objects.filter(user=user).order_by('-id')
 
     data = []
@@ -65,15 +66,11 @@ def get_orders(request):
 @permission_classes([IsAuthenticated])
 def place_order(request):
 
-    user = request.user
-
-    if isinstance(user, AnonymousUser):
-        return Response({"error": "Login required"}, status=401)
+    user = get_user(request)   # ✅ IMPORTANT CHANGE
 
     address = request.data.get("address")
     payment_method = request.data.get("payment_method")
 
-    # ✅ VALIDATION
     if not address:
         return Response({"error": "Address is required"}, status=400)
 
@@ -104,7 +101,7 @@ def place_order(request):
 
     cart_items.delete()
 
-    return Response({"message": "Order placed successfully", "order_id": order.id})
+    return Response({"message": "Order placed successfully"})
 
 # ===============================
 # CANCEL ORDER
