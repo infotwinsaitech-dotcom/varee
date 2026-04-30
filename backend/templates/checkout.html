@@ -214,9 +214,9 @@ h1,h2 { font-family: 'Playfair Display', serif; }
 
     <!-- BUTTON FIXED -->
     <div>
-        <button type="submit" class="checkout-btn w-full">
-            PLACE ORDER →
-        </button>
+       <button onclick="placeOrder()" class="w-full bg-pink-400 text-white py-3 rounded">
+    PLACE ORDER →
+</button>
 
         <p class="text-xs text-gray-400 mt-4 text-center">
             By placing your order, you agree to our Terms & Privacy Policy.
@@ -228,6 +228,70 @@ h1,h2 { font-family: 'Playfair Display', serif; }
 </div>
 
 </form>
+<script>
 
+function getCSRFToken() {
+    return document.cookie
+        .split('; ')
+        .find(row => row.startsWith('csrftoken'))
+        ?.split('=')[1];
+}
+function selectPayment(method, el) {
+
+    document.getElementById("payment-method").value = method;
+
+    document.querySelectorAll(".payment-box").forEach(box => {
+        box.classList.remove("border-2", "border-black");
+    });
+
+    el.classList.add("border-2", "border-black");
+}
+async function placeOrder() {
+
+    const csrftoken = getCSRFToken();
+
+    // 🔥 form से data लो
+    const name = document.querySelector('input[name="name"]').value;
+    const address = document.querySelector('input[name="address"]').value;
+    const city = document.querySelector('input[name="city"]').value;
+    const state = document.querySelector('input[name="state"]').value;
+    const zip = document.querySelector('input[name="zip"]').value;
+
+    const fullAddress = `${name}, ${address}, ${city}, ${state} - ${zip}`;
+
+    const payment_method = document.getElementById("payment-method").value || "COD";
+
+    try {
+        const res = await fetch("/api/orders/place/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken
+            },
+            body: JSON.stringify({
+                address: fullAddress,
+                payment_method: payment_method
+            })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            alert("✅ Order placed successfully");
+
+            // 👉 redirect
+            window.location.href = "/orders/";
+
+        } else {
+            alert(data.error || "❌ Order failed");
+        }
+
+    } catch (error) {
+        alert("❌ Server error");
+    }
+}
+
+
+</script>
 </body>
 </html>
